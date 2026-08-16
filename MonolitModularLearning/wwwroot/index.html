@@ -177,7 +177,7 @@
     <script>
         const myBasketId = 1;
         let currentPage = 1;
-        let currentCategoryId = null; // Hazırda hansı kateqoriyada olduğumuzu izləmək üçün
+        let currentCategoryId = null;
 
         // 1. KATEQORİYALARI GƏTİR
         async function loadCategories() {
@@ -186,18 +186,17 @@
                 const data = await res.json();
                 const list = document.getElementById('categoryList');
 
-                // "Bütün Məhsullar" üçün düymə
                 list.innerHTML = `<li class="list-group-item fw-bold text-primary" onclick="selectCategory(null, 'Bütün Məhsullar')" style="cursor:pointer;">
-                            <i class="fas fa-th-large me-2"></i> Bütün Məhsullar
-                        </li>`;
+                                <i class="fas fa-th-large me-2"></i> Bütün Məhsullar
+                            </li>`;
 
                 if (data && data.length > 0) {
                     data.forEach(c => {
                         const catId = c.Id || c.id;
                         const catName = c.Name || c.name;
                         list.innerHTML += `<li class="list-group-item" onclick="selectCategory(${catId}, '${catName}')" style="cursor:pointer;">
-                                    ${catName}
-                                </li>`;
+                                        ${catName}
+                                    </li>`;
                     });
                 } else {
                     list.innerHTML += '<li class="list-group-item text-muted">Kateqoriya tapılmadı</li>';
@@ -219,47 +218,46 @@
                     const pCatName = p.CategroyName || p.categroyName || p.categoryName || '';
 
                     grid.innerHTML += `
-                            <div class="col-md-4 mb-4">
-                                <div class="card product-card h-100 text-center p-3 position-relative">
-                                    <div class="card-actions">
-                                        <button class="btn btn-sm btn-outline-info" onclick="openEditModal(${pId}, '${pName}', ${pPrice}, ${pCatId})" title="Redaktə et">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-outline-danger" onclick="deleteProduct(${pId})" title="Sil">
-                                            <i class="fas fa-trash"></i>
+                                <div class="col-md-4 mb-4">
+                                    <div class="card product-card h-100 text-center p-3 position-relative">
+                                        <div class="card-actions">
+                                            <button class="btn btn-sm btn-outline-info" onclick="openEditModal(${pId}, '${pName}', ${pPrice}, ${pCatId})" title="Redaktə et">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger" onclick="deleteProduct(${pId})" title="Sil">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                        <div class="mb-3 mt-3 text-secondary"><i class="fas fa-box fa-3x"></i></div>
+                                        <h5 class="card-title">${pName || 'Adsız'}</h5>
+                                        <h6 class="text-success fw-bold">${pPrice ? pPrice + ' AZN' : 'Qiymət yoxdur'}</h6>
+                                        <p class="text-muted small mb-3">ID: ${pId} | ${pCatName}</p>
+                                        <button class="btn btn-outline-primary mt-auto" onclick="addToBasket(${pId})">
+                                            <i class="fas fa-cart-plus"></i> Səbətə at
                                         </button>
                                     </div>
-                                    <div class="mb-3 mt-3 text-secondary"><i class="fas fa-box fa-3x"></i></div>
-                                    <h5 class="card-title">${pName || 'Adsız'}</h5>
-                                    <h6 class="text-success fw-bold">${pPrice ? pPrice + ' AZN' : 'Qiymət yoxdur'}</h6>
-                                    <p class="text-muted small mb-3">ID: ${pId} | ${pCatName}</p>
-                                    <button class="btn btn-outline-primary mt-auto" onclick="addToBasket(${pId})">
-                                        <i class="fas fa-cart-plus"></i> Səbətə at
-                                    </button>
                                 </div>
-                            </div>
-                        `;
+                            `;
                 });
             } else {
                 grid.innerHTML = '<div class="col-12 alert alert-info">Bu kateqoriyada məhsul tapılmadı.</div>';
             }
         }
 
-        // 2. KATEQORIYA SEÇİLƏNDƏ VƏ YA BÜTÜN MƏHSULLARDA İŞƏ DÜŞƏN MƏRKƏZİ FUNKSİYA
         function selectCategory(categoryId, categoryName) {
             currentCategoryId = categoryId;
-            currentPage = 1; // Başqa kateqoriyaya keçəndə 1-ci səhifədən başla
+            currentPage = 1;
             document.getElementById('mainTitle').innerText = categoryName;
             loadProducts();
         }
 
-        // 3. MƏHSULLARI VƏ SƏHİFƏLƏMƏNI YÜKLƏYƏN ƏSAS FUNKSİYA
+        // 3. MƏHSULLARI VƏ SƏHİFƏLƏMƏNI YÜKLƏYƏN ƏSAS FUNKSİYA (DÜZƏLİŞ EDİLDİ)
         async function loadProducts(page = 1) {
             currentPage = page;
             try {
-                let url = `/api/products?page=${currentPage}&size=12`;
+                // ARTIQ BURADA SİZE GÖNDƏRMİRİK, BACKEND ÖZÜ HƏLL EDƏCƏK
+                let url = `/api/products?page=${currentPage}`;
 
-                // Əgər xüsusi kateqoriya seçilibsə, süzgəc endpointinə müraciət edirik
                 if (currentCategoryId !== null) {
                     url = `/api/products/category/${currentCategoryId}`;
                 }
@@ -269,11 +267,10 @@
                     const data = await res.json();
                     renderProductGrid(data);
 
-                    // Əgər ümumi məhsullardayıqsa, səhifələmə düymələrini göstərək
                     if (currentCategoryId === null) {
                         renderPagination();
                     } else {
-                        document.getElementById('paginationUI').innerHTML = ''; // Kateqoriyada səhifələməni bağlaya bilərik
+                        document.getElementById('paginationUI').innerHTML = '';
                     }
                 } else {
                     renderProductGrid([]);
@@ -281,36 +278,33 @@
             } catch (err) { console.error("Məhsullar yüklənərkən xəta:", err); }
         }
 
-        // 4. SƏHİFƏLƏMƏ DÜYMƏLƏRİNİN RƏSMİ (RENDER)
+        // 4. SƏHİFƏLƏMƏ DÜYMƏLƏRİNİN RƏSMİ
         function renderPagination() {
             const paginationList = document.getElementById('paginationUI');
             paginationList.innerHTML = '';
 
-            // Əvvəlki düyməsi
             paginationList.innerHTML += `
-                    <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
-                        <button class="page-link" onclick="loadProducts(${currentPage - 1})">Əvvəlki</button>
-                    </li>
-                `;
-
-            // Səhifə nömrələri (1, 2, 3)
-            for (let i = 1; i <= 3; i++) {
-                paginationList.innerHTML += `
-                        <li class="page-item ${currentPage === i ? 'active' : ''}">
-                            <button class="page-link" onclick="loadProducts(${i})">${i}</button>
+                        <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                            <button class="page-link" onclick="loadProducts(${currentPage - 1})">Əvvəlki</button>
                         </li>
                     `;
+
+            for (let i = 1; i <= 3; i++) {
+                paginationList.innerHTML += `
+                            <li class="page-item ${currentPage === i ? 'active' : ''}">
+                                <button class="page-link" onclick="loadProducts(${i})">${i}</button>
+                            </li>
+                        `;
             }
 
-            // Növbəti düyməsi
             paginationList.innerHTML += `
-                    <li class="page-item">
-                        <button class="page-link" onclick="loadProducts(${currentPage + 1})">Növbəti</button>
-                    </li>
-                `;
+                        <li class="page-item">
+                            <button class="page-link" onclick="loadProducts(${currentPage + 1})">Növbəti</button>
+                        </li>
+                    `;
         }
 
-        // 5. SİLMƏ ƏMƏLİYYATI (DELETE)
+        // 5. SİLMƏ ƏMƏLİYYATI
         async function deleteProduct(id) {
             if (confirm(`Məhsulu silmək istədiyinizə əminsiniz?`)) {
                 try {
@@ -321,7 +315,6 @@
             }
         }
 
-        // 6. REDAKTƏ PƏNCƏRƏSİNİ AÇMAQ
         function openEditModal(id, name, price, catId) {
             document.getElementById('editProdId').value = id;
             document.getElementById('editProdName').value = name;
@@ -330,7 +323,6 @@
             new bootstrap.Modal(document.getElementById('editProductModal')).show();
         }
 
-        // 7. REDAKTƏNİ YADDA SAXLAMAQ (PUT)
         async function updateProduct(e) {
             e.preventDefault();
             const id = document.getElementById('editProdId').value;
@@ -351,7 +343,6 @@
             } catch (err) { console.error(err); }
         }
 
-        // 8. SƏBƏTƏ ƏLAVƏ ET VƏ BAX
         async function addToBasket(productId) {
             try {
                 const res = await fetch(`/api/baskets/${myBasketId}/items`, {
@@ -372,15 +363,14 @@
                 if (data && data.length > 0) {
                     data.forEach(item => {
                         list.innerHTML += `<li class="list-group-item d-flex justify-content-between align-items-center">
-                                        Məhsul ID: ${item.productId} <span class="badge bg-primary rounded-pill">${item.quantity} ədəd</span>
-                                    </li>`;
+                                            Məhsul ID: ${item.productId} <span class="badge bg-primary rounded-pill">${item.quantity} ədəd</span>
+                                        </li>`;
                     });
                 } else { list.innerHTML = '<li class="list-group-item">Səbət boşdur.</li>'; }
                 new bootstrap.Modal(document.getElementById('basketModal')).show();
             } catch (err) { console.error(err); }
         }
 
-        // 9. KATEQORİYA VƏ MƏHSUL ƏLAVƏ ETMƏK (POST)
         async function addCategory(e) {
             e.preventDefault();
             const name = document.getElementById('newCatName').value;
