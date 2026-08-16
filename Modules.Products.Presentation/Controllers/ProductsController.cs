@@ -42,7 +42,7 @@ public async Task<IActionResult> Post(RequestProductCreate productdto)
 }
 
 [HttpGet]
-public async Task<IActionResult> Get([FromQuery] int page = 1, [FromQuery] int size = 10)
+public async Task<IActionResult> Get([FromQuery] int page = 1, [FromQuery] int size = 5)
 {
    
     var products = await _productModuleService.Get(page, size);
