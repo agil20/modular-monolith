@@ -17,8 +17,7 @@ namespace Modules.Products.Domain
 
         public ProductDescription? ProductDescription { get; set; }
 
-        public int Test { get; set; }
-        public int reqem { get; set; }
+
 
     }
 }
