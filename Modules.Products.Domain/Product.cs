@@ -16,5 +16,9 @@ namespace Modules.Products.Domain
         public int CategoryId { get; set; }
 
         public ProductDescription? ProductDescription { get; set; }
+
+        public int Test { get; set; }
+        public int reqem { get; set; }
+
     }
 }
