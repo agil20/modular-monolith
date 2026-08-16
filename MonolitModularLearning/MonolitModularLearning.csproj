@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<NoWarn>$(NoWarn);NU1510</NoWarn>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="FluentValidation" Version="12.1.1" />
+		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
+		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.10" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.10">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.10">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.3" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<!-- Baskets -->
+		<ProjectReference Include="..\Modules.Baskets.Contract\Modules.Baskets.Contract.csproj" />
+		<ProjectReference Include="..\Modules.Baskets.Infrastructure\Modules.Baskets.Infrastructure.csproj" />
+		<ProjectReference Include="..\Modules.Baskets.Presentation\Modules.Baskets.Presentation.csproj" />
+
+		<!-- Categories -->
+		<ProjectReference Include="..\Modules.Categories.Infrastructure\Modules.Categories.Infrastructure.csproj" />
+		<ProjectReference Include="..\Modules.Categories.Presentation\Modules.Categories.Presentation.csproj" />
+
+		<!-- Products -->
+		<ProjectReference Include="..\Modules.Products.Contract\Modules.Products.Contract.csproj" />
+		<ProjectReference Include="..\Modules.Products.Infrastructure\Modules.Products.Infrastructure.csproj" />
+		<ProjectReference Include="..\Modules.Products.Presentation\Modules.Products.Presentation.csproj" />
+	</ItemGroup>
+
+</Project>

@@ -1,0 +1,27 @@
+<Solution>
+  <Folder Name="/src/" />
+  <Folder Name="/src/Modules/" />
+  <Folder Name="/src/Modules/Baskets/">
+    <Project Path="Modules.Baskets.Application/Modules.Baskets.Application.csproj" Id="b84afd20-4901-4523-8563-5ecc55478fe3" />
+    <Project Path="Modules.Baskets.Contract/Modules.Baskets.Contract.csproj" Id="8d1fc542-31af-4e0e-9a43-99976e0737a5" />
+    <Project Path="Modules.Baskets.Domain/Modules.Baskets.Domain.csproj" Id="6c835083-93b6-46bb-967a-868a687962b6" />
+    <Project Path="Modules.Baskets.Infrastructure/Modules.Baskets.Infrastructure.csproj" Id="c00eb1e3-3ef1-4051-9871-57abf0662842" />
+    <Project Path="Modules.Baskets.Presentation/Modules.Baskets.Presentation.csproj" Id="81a89f8b-88c5-49cc-a0c3-ea6c25ee775c" />
+  </Folder>
+  <Folder Name="/src/Modules/Categories/">
+    <Project Path="Modules.Categories.Application/Modules.Categories.Application.csproj" Id="359f24e5-52fc-4887-9a56-6b88cdc73270" />
+    <Project Path="Modules.Categories.Contracts/Modules.Categories.Contracts.csproj" Id="26b88151-9a19-47e6-8934-3b1a212bc0eb" />
+    <Project Path="Modules.Categories.Domain/Modules.Categories.Domain.csproj" Id="6ed91478-410e-420e-a9f9-6512a8faca47" />
+    <Project Path="Modules.Categories.Infrastructure/Modules.Categories.Infrastructure.csproj" Id="23d2042e-612d-40b4-89bc-597018c98036" />
+    <Project Path="Modules.Categories.Presentation/Modules.Categories.Presentation.csproj" Id="99051b1f-f7b1-426a-a3aa-2685486b4451" />
+  </Folder>
+  <Folder Name="/src/Modules/Products/">
+    <Project Path="Modules.Products.Application/Modules.Products.Application.csproj" Id="3b890662-f590-4fc1-9c3d-d10b3086b719" />
+    <Project Path="Modules.Products.Contracts/Modules.Products.Contracts.csproj" Id="b071d087-1b8e-47f5-b568-67d36de25615" />
+    <Project Path="Modules.Products.Domain/Modules.Products.Domain.csproj" Id="d87a4096-5855-4819-8913-b57b3f8eeba1" />
+    <Project Path="Modules.Products.Infrastructure/Modules.Products.Infrastructure.csproj" Id="bdce172d-939d-40f5-9b2e-c115fdfa5375" />
+    <Project Path="Modules.Products.Presentation/Modules.Products.Presentation.csproj" Id="498b10ce-1972-486b-bcf1-37bbe0fbd277" />
+  </Folder>
+  <Project Path="Common/Common.csproj" Id="4db05f26-bb4d-40f9-a3ed-59ba8b1f85e8" />
+  <Project Path="MonolitModularLearning/MonolitModularLearning.csproj" />
+</Solution>

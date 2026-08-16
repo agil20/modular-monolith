@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<!-- API xüsusiyyətlərini (Controller, Route və s.) tanımaq üçün -->
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+
+	<!-- Controller-in içindən MediatR (Command/Query) çağıra bilmək üçün Application qatına referans veririk -->
+	<ItemGroup>
+		<ProjectReference Include="..\Modules.Products.Application\Modules.Products.Application.csproj" />
+		<ProjectReference Include="..\Modules.Products.Contracts\Modules.Products.Contracts.csproj" />
+	</ItemGroup>
+
+</Project>
