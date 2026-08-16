@@ -27,7 +27,8 @@ namespace Modules.Categories.Infrastructure.Service
         {
             var responseCategories = await _context.Categories.Select(c => new ResponseCategory
             {
-                Name = c.Name
+                Name = c.Name,
+                Id= c.Id,
             }).AsNoTracking().ToListAsync();
 
             return responseCategories;

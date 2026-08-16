@@ -7,7 +7,7 @@ namespace Modules.Categories.Contract.CategoryDTOs
 {
     public class ResponseCategory
     {
-
+        public int Id { get; set; }
         public string Name { get; set; }
     }
 }

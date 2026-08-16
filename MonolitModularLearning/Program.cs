@@ -53,11 +53,13 @@ if (app.Environment.IsDevelopment())
         c.SwaggerEndpoint("/swagger/categories/swagger.json", "Categories API");
         c.SwaggerEndpoint("/swagger/products/swagger.json", "Products API");
         c.SwaggerEndpoint("/swagger/baskets/swagger.json", "Baskets API");
-        c.RoutePrefix = string.Empty;
+      //  c.RoutePrefix = string.Empty;
     });
 }
-
+app.UseDefaultFiles(); // Bu kod wwwroot içindəki "index.html" faylını avtomatik tapıb ana səhifə edir.
+app.UseStaticFiles();  // Bu kod isə ümumiyyətlə wwwroot qovluğunu kənara açır (şəkillər, CSS, JS üçün).
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+
 app.Run();  

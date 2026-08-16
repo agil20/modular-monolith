@@ -1,6 +1,7 @@
 ﻿using Modules.Products.Contract.ProductDTOs;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks; // <-- Bax bu mütləq lazımdır!
 
@@ -14,4 +15,6 @@ public interface IProductModuleService
     Task Delete(int id);
     Task Update(int id, RequestProductCreate requestProductUpdate);
     Task<Dictionary<int, ResponseProductGet>> GetProductNamesByIdsAsync(List<int> productIds);
+
+    Task<List<ResponseProductGet>> GetProductsByCategory(int categoryId);
 }

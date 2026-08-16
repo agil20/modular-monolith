@@ -1,0 +1,405 @@
+﻿<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monolit Mağaza</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome (İkonlar üçün) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f4f6f9;
+        }
+
+        .navbar {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .product-card {
+            transition: transform 0.2s;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+            .product-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            }
+
+        .category-list .list-group-item {
+            transition: 0.2s;
+        }
+
+            .category-list .list-group-item:hover {
+                background-color: #e9ecef;
+            }
+
+        .card-actions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- YUXARI MENYU (NAVBAR) -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#"><i class="fas fa-store me-2"></i>Monolit Mağaza</a>
+            <div class="d-flex gap-3">
+                <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#adminModal">
+                    <i class="fas fa-cog"></i> Admin Panel
+                </button>
+                <button class="btn btn-warning" onclick="viewBasket()">
+                    <i class="fas fa-shopping-cart"></i> Səbətim
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ƏSAS KONTENT -->
+    <div class="container mt-4">
+        <div class="row">
+
+            <!-- SOL TƏRƏF: KATEQORİYALAR -->
+            <div class="col-md-3 mb-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <i class="fas fa-list"></i> Kateqoriyalar
+                    </div>
+                    <ul class="list-group list-group-flush category-list" id="categoryList">
+                        <li class="list-group-item text-muted">Yüklənir...</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- SAĞ TƏRƏF: MƏHSULLAR (VİTRİN) -->
+            <div class="col-md-9">
+                <h4 class="mb-3" id="mainTitle">Bütün Məhsullar</h4>
+                <div class="row" id="productGrid">
+                    <div class="col-12 text-muted">Məhsullar yüklənir...</div>
+                </div>
+
+                <!-- SƏHİFƏLƏMƏ (PAGINATION) DÜYMƏLƏRİ -->
+                <nav class="mt-4" aria-label="Page navigation">
+                    <ul class="pagination justify-content-center" id="paginationUI">
+                        <!-- JS vasitəsilə dinamik olaraq dolacaq -->
+                    </ul>
+                </nav>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ================= MODALLAR ================= -->
+    <!-- SƏBƏT MODALI -->
+    <div class="modal fade" id="basketModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-warning">
+                    <h5 class="modal-title"><i class="fas fa-shopping-cart"></i> Mənim Səbətim</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <ul class="list-group" id="basketItemsList"></ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bağla</button>
+                    <button type="button" class="btn btn-success">Sifarişi Təsdiqlə</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADMIN PANEL MODALI -->
+    <div class="modal fade" id="adminModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title">Admin Panel - Yeni Məlumat Əlavə Et</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body row">
+                    <div class="col-md-6 border-end">
+                        <h6 class="text-primary">Yeni Kateqoriya</h6>
+                        <form onsubmit="addCategory(event)">
+                            <input type="text" id="newCatName" class="form-control mb-2" placeholder="Kateqoriya Adı" required>
+                            <button type="submit" class="btn btn-primary w-100">Əlavə et</button>
+                        </form>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-success">Yeni Məhsul</h6>
+                        <form onsubmit="addProduct(event)">
+                            <input type="text" id="newProdName" class="form-control mb-2" placeholder="Məhsul Adı" required>
+                            <input type="number" id="newProdPrice" class="form-control mb-2" placeholder="Qiyməti" required>
+                            <input type="number" id="newProdCatId" class="form-control mb-2" placeholder="Kateqoriya ID-si" required>
+                            <button type="submit" class="btn btn-success w-100">Əlavə et</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MƏHSULU REDAKTƏ ETMƏK ÜÇÜN MODAL -->
+    <div class="modal fade" id="editProductModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title"><i class="fas fa-edit"></i> Məhsulu Redaktə Et</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form onsubmit="updateProduct(event)">
+                        <input type="hidden" id="editProdId">
+                        <label class="form-label">Məhsul Adı:</label>
+                        <input type="text" id="editProdName" class="form-control mb-2" required>
+                        <label class="form-label">Qiymət:</label>
+                        <input type="number" id="editProdPrice" class="form-control mb-2" required>
+                        <label class="form-label">Kateqoriya ID-si:</label>
+                        <input type="number" id="editProdCatId" class="form-control mb-3" required>
+                        <button type="submit" class="btn btn-info w-100 text-white">Yadda Saxla</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- ================= JAVASCRIPT & API ================= -->
+    <script>
+        const myBasketId = 1;
+        let currentPage = 1;
+        let currentCategoryId = null; // Hazırda hansı kateqoriyada olduğumuzu izləmək üçün
+
+        // 1. KATEQORİYALARI GƏTİR
+        async function loadCategories() {
+            try {
+                const res = await fetch('/api/category');
+                const data = await res.json();
+                const list = document.getElementById('categoryList');
+
+                // "Bütün Məhsullar" üçün düymə
+                list.innerHTML = `<li class="list-group-item fw-bold text-primary" onclick="selectCategory(null, 'Bütün Məhsullar')" style="cursor:pointer;">
+                            <i class="fas fa-th-large me-2"></i> Bütün Məhsullar
+                        </li>`;
+
+                if (data && data.length > 0) {
+                    data.forEach(c => {
+                        const catId = c.Id || c.id;
+                        const catName = c.Name || c.name;
+                        list.innerHTML += `<li class="list-group-item" onclick="selectCategory(${catId}, '${catName}')" style="cursor:pointer;">
+                                    ${catName}
+                                </li>`;
+                    });
+                } else {
+                    list.innerHTML += '<li class="list-group-item text-muted">Kateqoriya tapılmadı</li>';
+                }
+            } catch (err) { console.error("Kateqoriyalar yüklənərkən xəta:", err); }
+        }
+
+        // MƏHSULLARI EKRANA YAZDIRAN ORTAQ FUNKSİYA
+        function renderProductGrid(data) {
+            const grid = document.getElementById('productGrid');
+            grid.innerHTML = '';
+
+            if (data && data.length > 0) {
+                data.forEach(p => {
+                    const pId = p.Id || p.id;
+                    const pName = p.Name || p.name;
+                    const pPrice = p.Price || p.price;
+                    const pCatId = p.CategoryId || p.categoryId;
+                    const pCatName = p.CategroyName || p.categroyName || p.categoryName || '';
+
+                    grid.innerHTML += `
+                            <div class="col-md-4 mb-4">
+                                <div class="card product-card h-100 text-center p-3 position-relative">
+                                    <div class="card-actions">
+                                        <button class="btn btn-sm btn-outline-info" onclick="openEditModal(${pId}, '${pName}', ${pPrice}, ${pCatId})" title="Redaktə et">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger" onclick="deleteProduct(${pId})" title="Sil">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                    <div class="mb-3 mt-3 text-secondary"><i class="fas fa-box fa-3x"></i></div>
+                                    <h5 class="card-title">${pName || 'Adsız'}</h5>
+                                    <h6 class="text-success fw-bold">${pPrice ? pPrice + ' AZN' : 'Qiymət yoxdur'}</h6>
+                                    <p class="text-muted small mb-3">ID: ${pId} | ${pCatName}</p>
+                                    <button class="btn btn-outline-primary mt-auto" onclick="addToBasket(${pId})">
+                                        <i class="fas fa-cart-plus"></i> Səbətə at
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                });
+            } else {
+                grid.innerHTML = '<div class="col-12 alert alert-info">Bu kateqoriyada məhsul tapılmadı.</div>';
+            }
+        }
+
+        // 2. KATEQORIYA SEÇİLƏNDƏ VƏ YA BÜTÜN MƏHSULLARDA İŞƏ DÜŞƏN MƏRKƏZİ FUNKSİYA
+        function selectCategory(categoryId, categoryName) {
+            currentCategoryId = categoryId;
+            currentPage = 1; // Başqa kateqoriyaya keçəndə 1-ci səhifədən başla
+            document.getElementById('mainTitle').innerText = categoryName;
+            loadProducts();
+        }
+
+        // 3. MƏHSULLARI VƏ SƏHİFƏLƏMƏNI YÜKLƏYƏN ƏSAS FUNKSİYA
+        async function loadProducts(page = 1) {
+            currentPage = page;
+            try {
+                let url = `/api/products?page=${currentPage}&size=12`;
+
+                // Əgər xüsusi kateqoriya seçilibsə, süzgəc endpointinə müraciət edirik
+                if (currentCategoryId !== null) {
+                    url = `/api/products/category/${currentCategoryId}`;
+                }
+
+                const res = await fetch(url);
+                if (res.ok) {
+                    const data = await res.json();
+                    renderProductGrid(data);
+
+                    // Əgər ümumi məhsullardayıqsa, səhifələmə düymələrini göstərək
+                    if (currentCategoryId === null) {
+                        renderPagination();
+                    } else {
+                        document.getElementById('paginationUI').innerHTML = ''; // Kateqoriyada səhifələməni bağlaya bilərik
+                    }
+                } else {
+                    renderProductGrid([]);
+                }
+            } catch (err) { console.error("Məhsullar yüklənərkən xəta:", err); }
+        }
+
+        // 4. SƏHİFƏLƏMƏ DÜYMƏLƏRİNİN RƏSMİ (RENDER)
+        function renderPagination() {
+            const paginationList = document.getElementById('paginationUI');
+            paginationList.innerHTML = '';
+
+            // Əvvəlki düyməsi
+            paginationList.innerHTML += `
+                    <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                        <button class="page-link" onclick="loadProducts(${currentPage - 1})">Əvvəlki</button>
+                    </li>
+                `;
+
+            // Səhifə nömrələri (1, 2, 3)
+            for (let i = 1; i <= 3; i++) {
+                paginationList.innerHTML += `
+                        <li class="page-item ${currentPage === i ? 'active' : ''}">
+                            <button class="page-link" onclick="loadProducts(${i})">${i}</button>
+                        </li>
+                    `;
+            }
+
+            // Növbəti düyməsi
+            paginationList.innerHTML += `
+                    <li class="page-item">
+                        <button class="page-link" onclick="loadProducts(${currentPage + 1})">Növbəti</button>
+                    </li>
+                `;
+        }
+
+        // 5. SİLMƏ ƏMƏLİYYATI (DELETE)
+        async function deleteProduct(id) {
+            if (confirm(`Məhsulu silmək istədiyinizə əminsiniz?`)) {
+                try {
+                    const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
+                    if (res.ok) { loadProducts(currentPage); }
+                    else { alert("Silinərkən xəta baş verdi."); }
+                } catch (err) { console.error(err); }
+            }
+        }
+
+        // 6. REDAKTƏ PƏNCƏRƏSİNİ AÇMAQ
+        function openEditModal(id, name, price, catId) {
+            document.getElementById('editProdId').value = id;
+            document.getElementById('editProdName').value = name;
+            document.getElementById('editProdPrice').value = price;
+            document.getElementById('editProdCatId').value = catId;
+            new bootstrap.Modal(document.getElementById('editProductModal')).show();
+        }
+
+        // 7. REDAKTƏNİ YADDA SAXLAMAQ (PUT)
+        async function updateProduct(e) {
+            e.preventDefault();
+            const id = document.getElementById('editProdId').value;
+            const name = document.getElementById('editProdName').value;
+            const price = document.getElementById('editProdPrice').value;
+            const catId = document.getElementById('editProdCatId').value;
+
+            try {
+                const res = await fetch(`/api/products/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: name, price: price, categoryId: catId })
+                });
+                if (res.ok) {
+                    bootstrap.Modal.getInstance(document.getElementById('editProductModal')).hide();
+                    loadProducts(currentPage);
+                } else { alert("Yenilənərkən xəta oldu!"); }
+            } catch (err) { console.error(err); }
+        }
+
+        // 8. SƏBƏTƏ ƏLAVƏ ET VƏ BAX
+        async function addToBasket(productId) {
+            try {
+                const res = await fetch(`/api/baskets/${myBasketId}/items`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ productId: productId, quantity: 1 })
+                });
+                if (res.ok) alert("Səbətə əlavə edildi!");
+            } catch (err) { console.error(err); }
+        }
+
+        async function viewBasket() {
+            try {
+                const res = await fetch(`/api/baskets/${myBasketId}`);
+                const data = await res.json();
+                const list = document.getElementById('basketItemsList');
+                list.innerHTML = '';
+                if (data && data.length > 0) {
+                    data.forEach(item => {
+                        list.innerHTML += `<li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Məhsul ID: ${item.productId} <span class="badge bg-primary rounded-pill">${item.quantity} ədəd</span>
+                                    </li>`;
+                    });
+                } else { list.innerHTML = '<li class="list-group-item">Səbət boşdur.</li>'; }
+                new bootstrap.Modal(document.getElementById('basketModal')).show();
+            } catch (err) { console.error(err); }
+        }
+
+        // 9. KATEQORİYA VƏ MƏHSUL ƏLAVƏ ETMƏK (POST)
+        async function addCategory(e) {
+            e.preventDefault();
+            const name = document.getElementById('newCatName').value;
+            await fetch('/api/category', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: name }) });
+            document.getElementById('newCatName').value = '';
+            loadCategories();
+        }
+
+        async function addProduct(e) {
+            e.preventDefault();
+            const name = document.getElementById('newProdName').value;
+            const price = document.getElementById('newProdPrice').value;
+            const categoryId = document.getElementById('newProdCatId').value;
+            await fetch('/api/products', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: name, price: price, categoryId: categoryId }) });
+            document.getElementById('newProdName').value = ''; document.getElementById('newProdPrice').value = ''; document.getElementById('newProdCatId').value = '';
+            loadProducts(currentPage);
+        }
+
+        window.onload = () => { loadCategories(); loadProducts(); };
+    </script>
+</body>
+</html>

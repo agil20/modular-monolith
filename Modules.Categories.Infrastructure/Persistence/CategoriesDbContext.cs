@@ -1,9 +1,7 @@
-﻿
-using Common.Entites;
+﻿using Common.Entites;
 using Microsoft.EntityFrameworkCore;
 using Modules.Categories.Domain;
 using System;
-
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -29,6 +27,15 @@ public class CategoriesDbContext : DbContext
         });
 
         modelBuilder.Entity<Category>().HasQueryFilter(x => !x.IsDeleted);
+        var seedDate = new DateTimeOffset(2026, 8, 17, 0, 0, 0, TimeSpan.Zero);
+
+        // Kateqoriyalar sənin dediyin kimi 2-dən başlayır
+        modelBuilder.Entity<Category>().HasData(
+            new Category { Id = 2, Name = "Elektronika", CreatedAt = seedDate, IsDeleted = false },
+            new Category { Id = 3, Name = "Geyim", CreatedAt = seedDate, IsDeleted = false },
+            new Category { Id = 4, Name = "Ev və Mebel", CreatedAt = seedDate, IsDeleted = false },
+            new Category { Id = 5, Name = "İdman və Əyləncə", CreatedAt = seedDate, IsDeleted = false }
+        );
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -42,16 +49,12 @@ public class CategoriesDbContext : DbContext
                 case EntityState.Modified:
                     entry.Entity.UpdatedAt = DateTimeOffset.UtcNow;
                     break;
-
                 case EntityState.Added:
-                    // Səndə break sözü yuxarıda qalmışdı deyə xəta verəcəkdi, yeri düzəldildi
                     entry.Entity.CreatedAt = DateTimeOffset.UtcNow;
                     break;
-
                 case EntityState.Deleted:
                     entry.State = EntityState.Modified;
                     entry.Entity.IsDeleted = true;
-                    // Silinmə vaxtını da yenilənmə kimi qeyd etmək tövsiyə olunur
                     entry.Entity.UpdatedAt = DateTimeOffset.UtcNow;
                     break;
             }

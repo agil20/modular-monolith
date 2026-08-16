@@ -1,0 +1,191 @@
+﻿<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modular Monolith İdarə Paneli</title>
+    <!-- Bootstrap CSS üçün -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding-top: 20px;
+        }
+
+        .card {
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .module-header {
+            background-color: #343a40;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px 5px 0 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2 class="mb-4 text-center">Modulların İdarə Paneli</h2>
+
+        <div class="row">
+            <!-- CATEGORIES MODULU -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="module-header">Kategoriyalar (Categories)</div>
+                    <div class="card-body">
+                        <form id="categoryForm" onsubmit="addCategory(event)">
+                            <div class="mb-2">
+                                <!-- Fərz edirəm ki, RequestCategoryCreate daxilində 'Name' adlı xassə var -->
+                                <input type="text" id="categoryName" class="form-control" placeholder="Kategoriya adı" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100 mb-3">Əlavə et</button>
+                        </form>
+                        <button class="btn btn-success w-100 mb-2" onclick="loadCategories()">Siyahını Yenilə</button>
+                        <ul id="categoryList" class="list-group"></ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PRODUCTS MODULU -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="module-header">Məhsullar (Products)</div>
+                    <div class="card-body">
+                        <form id="productForm" onsubmit="addProduct(event)">
+                            <div class="mb-2">
+                                <input type="text" id="productName" class="form-control" placeholder="Məhsul adı" required>
+                            </div>
+                            <div class="mb-2">
+                                <input type="number" id="productPrice" class="form-control" placeholder="Qiymət" required>
+                            </div>
+                            <div class="mb-2">
+                                <input type="number" id="productCategoryId" class="form-control" placeholder="Kategoriya ID" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100 mb-3">Əlavə et</button>
+                        </form>
+                        <button class="btn btn-success w-100 mb-2" onclick="loadProducts()">Siyahını Yenilə (Səhifə 1)</button>
+                        <ul id="productList" class="list-group"></ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BASKETS MODULU -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="module-header">Səbət (Baskets)</div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label>Səbət ID:</label>
+                            <input type="number" id="basketIdInput" class="form-control mb-2" value="1">
+                            <button class="btn btn-success w-100" onclick="loadBasket()">Səbətə Bax</button>
+                        </div>
+                        <hr>
+                        <h5>Səbətə Məhsul Əlavə Et</h5>
+                        <form id="basketForm" onsubmit="addToBasket(event)">
+                            <div class="mb-2">
+                                <input type="number" id="basketProductId" class="form-control" placeholder="Məhsul ID" required>
+                            </div>
+                            <div class="mb-2">
+                                <input type="number" id="basketQuantity" class="form-control" placeholder="Miqdar" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Səbətə At</button>
+                        </form>
+                        <h6 class="mt-3">Səbətin İçi:</h6>
+                        <ul id="basketList" class="list-group"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // ================= CATEGORIES =================
+    async function loadCategories() {
+        const res = await fetch('/api/category');
+        const data = await res.json();
+        const list = document.getElementById('categoryList');
+        list.innerHTML = '';
+        data.forEach(c => {
+            list.innerHTML += `<li class="list-group-item">ID: ${c.id} - ${c.name || 'Ad yoxdur'}</li>`;
+        });
+    }
+
+    async function addCategory(e) {
+        e.preventDefault();
+        const name = document.getElementById('categoryName').value;
+        await fetch('/api/category', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: name }) // C# DTO-da 'Name' deyə qəbul edildiyini fərz edirik
+        });
+        loadCategories();
+    }
+
+    // ================= PRODUCTS =================
+    async function loadProducts() {
+        const res = await fetch('/api/products?page=1&size=10');
+        const data = await res.json();
+        const list = document.getElementById('productList');
+        list.innerHTML = '';
+        data.forEach(p => {
+            list.innerHTML += `<li class="list-group-item">ID: ${p.id} - ${p.name || 'Ad yoxdur'}</li>`;
+        });
+    }
+
+    async function addProduct(e) {
+        e.preventDefault();
+        const name = document.getElementById('productName').value;
+        const price = document.getElementById('productPrice').value;
+        const categoryId = document.getElementById('productCategoryId').value;
+
+        await fetch('/api/products', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: name, price: price, categoryId: categoryId })
+        });
+        loadProducts();
+    }
+
+    // ================= BASKETS =================
+    async function loadBasket() {
+        const basketId = document.getElementById('basketIdInput').value;
+        const res = await fetch(`/api/baskets/${basketId}`);
+        const data = await res.json();
+        const list = document.getElementById('basketList');
+        list.innerHTML = '';
+        // Fərz edirik ki, basket items array kimi qayıdır
+        if(data && data.length > 0) {
+            data.forEach(item => {
+                list.innerHTML += `<li class="list-group-item">Məhsul ID: ${item.productId} | Miqdar: ${item.quantity}</li>`;
+            });
+        } else {
+            list.innerHTML = '<li class="list-group-item">Səbət boşdur</li>';
+        }
+    }
+
+    async function addToBasket(e) {
+        e.preventDefault();
+        const basketId = document.getElementById('basketIdInput').value;
+        const productId = document.getElementById('basketProductId').value;
+        const quantity = document.getElementById('basketQuantity').value;
+
+        await fetch(`/api/baskets/${basketId}/items`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ productId: productId, quantity: quantity })
+        });
+        loadBasket();
+    }
+
+    // Səhifə açılanda dataları yüklə
+    window.onload = () => {
+        loadCategories();
+        loadProducts();
+    };
+    </script>
+
+</body>
+</html>

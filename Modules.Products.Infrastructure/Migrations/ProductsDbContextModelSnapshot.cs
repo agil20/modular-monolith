@@ -54,6 +54,89 @@ namespace Modules.Products.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Products", "Products");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 101,
+                            CategoryId = 2,
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 8, 17, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            IsDeleted = false,
+                            Name = "Noutbuk Asus ROG",
+                            Price = 2499.9899999999998
+                        },
+                        new
+                        {
+                            Id = 102,
+                            CategoryId = 2,
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 8, 17, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            IsDeleted = false,
+                            Name = "Apple iPhone 15 Pro",
+                            Price = 2799.0
+                        },
+                        new
+                        {
+                            Id = 103,
+                            CategoryId = 2,
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 8, 17, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            IsDeleted = false,
+                            Name = "Simsiz Qulaqlıq AirPods",
+                            Price = 450.0
+                        },
+                        new
+                        {
+                            Id = 104,
+                            CategoryId = 3,
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 8, 17, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            IsDeleted = false,
+                            Name = "Kişi Qış Gödəkcəsi",
+                            Price = 120.5
+                        },
+                        new
+                        {
+                            Id = 105,
+                            CategoryId = 3,
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 8, 17, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            IsDeleted = false,
+                            Name = "Qadın Donu",
+                            Price = 85.0
+                        },
+                        new
+                        {
+                            Id = 106,
+                            CategoryId = 4,
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 8, 17, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            IsDeleted = false,
+                            Name = "Ortopedik Matras",
+                            Price = 300.0
+                        },
+                        new
+                        {
+                            Id = 107,
+                            CategoryId = 4,
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 8, 17, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            IsDeleted = false,
+                            Name = "İş Masası",
+                            Price = 150.0
+                        },
+                        new
+                        {
+                            Id = 108,
+                            CategoryId = 5,
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 8, 17, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            IsDeleted = false,
+                            Name = "Qaçış Trenajoru",
+                            Price = 800.0
+                        },
+                        new
+                        {
+                            Id = 109,
+                            CategoryId = 5,
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 8, 17, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            IsDeleted = false,
+                            Name = "Futbol Topu (Nike)",
+                            Price = 65.0
+                        });
                 });
 
             modelBuilder.Entity("Modules.Products.Domain.ProductDescription", b =>

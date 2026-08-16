@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Modules.Categories.Contract.Services;
 using Modules.Products.Contract.ProductDTOs;
@@ -28,6 +29,7 @@ public ProductsController( ICategoryModuleService categoryModuleService, IProduc
     _categoryModuleService = categoryModuleService;
     _productModuleService = productModuleService;
 }
+  
 
 [HttpPost]
 
@@ -65,5 +67,15 @@ public async Task<IActionResult> Delete(int id)
    await _productModuleService.Delete(id);
     return Ok(new { message = "Product deleted successfully" });
 }
+
+    [HttpGet("category/{categoryId}")]
+
+    public async Task<IActionResult> GetProductsByCategory(int categoryId)
+    {
+        var products = await _productModuleService.GetProductsByCategory(categoryId);
+        return Ok(products);
+
+
+    }
 
 }
