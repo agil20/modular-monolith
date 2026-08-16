@@ -17,7 +17,7 @@ namespace Modules.Products.Domain
 
         public ProductDescription? ProductDescription { get; set; }
 
-
+      
 
     }
 }
