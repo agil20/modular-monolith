@@ -7,7 +7,9 @@ using Modules.Products.Infrastructure.Persistence;
 using MonolitModularLearning.Common.Extentions;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
+using System.Threading.Tasks;
+using Common.Exceptions; // Xüsusi xətalarımız üçün namespace əlavə olundu
 
 namespace Modules.Products.Infrastructure.Service;
 
@@ -15,35 +17,35 @@ public class PrductModuleService : IProductModuleService
 {
     private readonly ProductsDbContext _context;
     private readonly ICategoryModuleService _categoryModuleService;
+
     public PrductModuleService(ProductsDbContext context, ICategoryModuleService categoryModuleService)
     {
         _context = context;
         _categoryModuleService = categoryModuleService;
     }
 
-  
-
-    public  async Task<List<ResponseProductGet>> Get(int page, int size)
+    public async Task<List<ResponseProductGet>> Get(int page, int size)
     {
         var products = await _context.Products
-        .AsNoTracking()
-        .Include(p => p.ProductDescription)
-        .OrderBy(p => p.Id) 
-        .ToPaged(page, size) 
-        .Select(p => new ResponseProductGet
-        {
-            Id = p.Id,
-            Name = p.Name,
-            Price = p.Price,
-            CategoryId = p.CategoryId,
-            Description = p.ProductDescription != null ? p.ProductDescription.Description : string.Empty,
-            CategroyName = string.Empty 
-        })
-        .ToListAsync();
+            .AsNoTracking()
+            .Include(p => p.ProductDescription)
+            .OrderBy(p => p.Id)
+            .ToPaged(page, size)
+            .Select(p => new ResponseProductGet
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Price = p.Price,
+                CategoryId = p.CategoryId,
+                Description = p.ProductDescription != null ? p.ProductDescription.Description : string.Empty,
+                CategroyName = string.Empty
+            })
+            .ToListAsync();
 
-        if (!products.Any()) throw new Exception("Məhsullar tapılmadı");
+        // Ümumi Exception əvəzinə NotFoundException istifadə edirik
+        if (!products.Any())
+            throw new NotFoundException("Məhsullar tapılmadı");
 
-       
         var categoryIds = products.Select(p => p.CategoryId).Distinct().ToList();
 
         var categoryNames = await _categoryModuleService.GetCategoryNamesAsync(categoryIds);
@@ -60,7 +62,6 @@ public class PrductModuleService : IProductModuleService
             }
         }
         return products;
-
     }
 
     public async Task<ResponseProductGet> Get(int id)
@@ -71,34 +72,34 @@ public class PrductModuleService : IProductModuleService
             Name = p.Name,
             Price = p.Price,
             CategoryId = p.CategoryId,
-
             Description = p.ProductDescription != null ? p.ProductDescription.Description : string.Empty,
             CategroyName = string.Empty
         }).AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
 
-        if (product is null) throw new Exception("Məhsul tapılmadı");
+        // Ümumi Exception əvəzinə NotFoundException istifadə edirik
+        if (product is null)
+            throw new NotFoundException("Məhsul tapılmadı");
 
         var categoryName = await _categoryModuleService.GetCategoryNameAsync(product.CategoryId);
-
         product.CategroyName = categoryName;
+
         return product;
     }
 
     public async Task<Dictionary<int, ResponseProductGet>> GetProductNamesByIdsAsync(List<int> productIds)
     {
-        var products= await _context.Products
+        var products = await _context.Products
             .Where(p => productIds.Contains(p.Id))
             .Select(p => new ResponseProductGet
             {
                 Id = p.Id,
                 Name = p.Name,
-                Price = p.Price, 
+                Price = p.Price,
                 CategoryId = p.CategoryId
-
             })
             .ToDictionaryAsync(p => p.Id, p => p);
-        return products;
 
+        return products;
     }
 
     public async Task<List<ResponseProductGet>> GetProductsByCategory(int categoryId)
@@ -114,11 +115,10 @@ public class PrductModuleService : IProductModuleService
                 Price = p.Price,
                 CategoryId = p.CategoryId,
                 Description = p.ProductDescription != null ? p.ProductDescription.Description : string.Empty,
-                CategroyName = string.Empty 
+                CategroyName = string.Empty
             })
             .ToListAsync();
 
-     
         if (products.Any())
         {
             var categoryName = await _categoryModuleService.GetCategoryNameAsync(categoryId);
@@ -144,22 +144,25 @@ public class PrductModuleService : IProductModuleService
                 Description = productdto.Description
             }
         };
+
         _context.Products.Add(product);
         await _context.SaveChangesAsync();
     }
 
-   
-
     public async Task Update(int id, RequestProductCreate productdto)
     {
         var product = await _context.Products.Include(p => p.ProductDescription).FirstOrDefaultAsync(p => p.Id == id);
+
         if (product == null)
         {
-            throw new Exception("Məhsul tapılmadı");    
+            // Ümumi Exception əvəzinə NotFoundException istifadə edirik
+            throw new NotFoundException("Məhsul tapılmadı");
         }
+
         product.Name = productdto.Name;
         product.Price = productdto.Price;
         product.CategoryId = productdto.CategoryId;
+
         if (product.ProductDescription == null)
         {
             product.ProductDescription = new ProductDescription
@@ -171,20 +174,21 @@ public class PrductModuleService : IProductModuleService
         {
             product.ProductDescription.Description = productdto.Description;
         }
+
         await _context.SaveChangesAsync();
     }
 
-   
-
-  public async Task Delete(int id)
+    public async Task Delete(int id)
     {
         var product = await _context.Products.FindAsync(id);
+
         if (product == null)
         {
-            throw new Exception("Product not found");
+            
+            throw new NotFoundException("Product not found");
         }
+
         _context.Products.Remove(product);
         await _context.SaveChangesAsync();
-
     }
 }

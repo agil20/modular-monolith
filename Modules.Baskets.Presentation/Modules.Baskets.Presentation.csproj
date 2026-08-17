@@ -13,6 +13,7 @@
 
 	<ItemGroup>
 		<!-- Bu sətir IBasketModuleService, RequestBasketItem və s. Contract fayllarını görmək üçündür -->
+		<ProjectReference Include="..\Common\Common.csproj" />
 		<ProjectReference Include="..\Modules.Baskets.Contract\Modules.Baskets.Contract.csproj" />
 	</ItemGroup>
 

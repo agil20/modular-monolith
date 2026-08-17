@@ -1,3 +1,4 @@
+using Common.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
 using Modules.Baskets.Infrastructure.Extentions;
@@ -8,7 +9,8 @@ using Modules.Products.Infrastructure.Extentions;
 using Modules.Products.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.AddExceptionHandler<GlobalException>();
+builder.Services.AddProblemDetails();
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -43,7 +45,7 @@ builder.Services.AddDbContext<ProductsDbContext>(options =>
 
 
 var app = builder.Build();
-
+app.UseExceptionHandler();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
