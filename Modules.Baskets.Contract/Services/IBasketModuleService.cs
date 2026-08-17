@@ -15,6 +15,7 @@ public interface IBasketModuleService
 
   
     Task AddItemToBasketAsync(int basketId,RequestBasketItem requestBasketItem);
+    Task RemoveItemFromBasketAsync(int basketId, int productId);
 
 
 }
