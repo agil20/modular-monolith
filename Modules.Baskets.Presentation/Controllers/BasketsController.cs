@@ -22,7 +22,7 @@ namespace Modules.Baskets.Controllers
         {
             var basketItems = await _basketModuleService.GetBasketAsync(basketId);
 
-            // Uğurlu cavab və data (səbətin içindəkilər)
+     
             return Ok(new ApiResponseModel(true, 200, "Basket retrieved successfully", basketItems));
         }
 
@@ -31,8 +31,18 @@ namespace Modules.Baskets.Controllers
         {
             await _basketModuleService.AddItemToBasketAsync(basketId, requestBasketItem);
 
-            // Sadəcə təsdiq mesajı (data yoxdur)
             return Ok(new ApiResponseModel(true, 200, "Item added to basket successfully"));
+        }
+
+
+        [HttpDelete("{basketId}/items/{productId}")]
+        public async Task<IActionResult> RemoveItemFromBasket(int basketId, int productId)
+        {
+   
+            await _basketModuleService.RemoveItemFromBasketAsync(basketId, productId);
+
+
+            return Ok(new ApiResponseModel(true, 200, "Məhsul səbətdən uğurla silindi"));
         }
     }
 }

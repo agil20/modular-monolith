@@ -7,7 +7,7 @@ using Modules.Products.Contracts.Services;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Common.Exceptions; // Xüsusi xətalarımız bura da gəldi!
+using Common.Exceptions;
 
 namespace Modules.Baskets.Infrastructure.Service
 {
@@ -57,7 +57,6 @@ namespace Modules.Baskets.Infrastructure.Service
                 .Include(b => b.Items)
                 .FirstOrDefaultAsync(b => b.Id == basketId);
 
-            // Köhnə InvalidOperationException əvəzinə NotFoundException istifadə edirik!
             if (basket == null)
                 throw new NotFoundException($"ID-si {basketId} olan səbət tapılmadı");
 
@@ -74,15 +73,31 @@ namespace Modules.Baskets.Infrastructure.Service
             {
                 ProductId = i.ProductId,
                 Quantity = i.Quantity,
-
-                // Pro Tip: Dictionary-dən məlumat çəkəndə hər ehtimala qarşı 'ContainsKey' ilə yoxlamaq 
-                // proqramın çökməsinin (KeyNotFoundException) qarşısını alır. (Məsələn: Məhsul silinib, amma səbətdə qalıb)
                 Price = producttNames.ContainsKey(i.ProductId) ? producttNames[i.ProductId].Price : 0,
                 ProductName = producttNames.ContainsKey(i.ProductId) ? producttNames[i.ProductId].Name : "Məhsul tapılmadı"
-
             }).ToList();
 
             return basketitemsdto;
+        }
+
+        public async Task RemoveItemFromBasketAsync(int basketId, int productId)
+        {
+            var basket = await _basketDbContext.Baskets
+                .Include(b => b.Items)
+                .FirstOrDefaultAsync(b => b.Id == basketId);
+
+            if (basket == null)
+                throw new NotFoundException($"ID-si {basketId} olan səbət tapılmadı");
+
+            var itemToRemove = basket.Items.FirstOrDefault(i => i.ProductId == productId);
+
+            if (itemToRemove == null)
+                throw new NotFoundException($"ID-si {productId} olan məhsul səbətdə tapılmadı");
+
+           
+            basket.Items.Remove(itemToRemove);
+
+            await _basketDbContext.SaveChangesAsync();
         }
     }
 }

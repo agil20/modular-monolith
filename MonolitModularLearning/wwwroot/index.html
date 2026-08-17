@@ -138,7 +138,7 @@
                 <i class="fas fa-shopping-bag me-2"></i>MonolitShop
             </a>
 
-            <!-- AXTARIŞ QUTUSU (LIVE SEARCH EVENT İLƏ) -->
+            <!-- AXTARIŞ QUTUSU -->
             <form class="d-flex search-form mx-lg-auto mb-2 mb-lg-0" onsubmit="handleSearch(event)">
                 <input class="form-control search-input shadow-none" type="search" id="searchInput"
                        placeholder="Məhsul axtar (məs: telefon)..." oninput="liveSearch(event)">
@@ -195,7 +195,7 @@
     </div>
 
     <!-- ================= MODALS ================= -->
-    <!-- CATEGORY MODAL (Create / Edit) -->
+    <!-- CATEGORY MODAL -->
     <div class="modal fade" id="categoryModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content border-0 shadow">
@@ -217,7 +217,7 @@
         </div>
     </div>
 
-    <!-- PRODUCT MODAL (Create / Edit) -->
+    <!-- PRODUCT MODAL -->
     <div class="modal fade" id="productModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content border-0 shadow">
@@ -265,6 +265,7 @@
                                 <th>Miqdar</th>
                                 <th>Qiymət</th>
                                 <th>Cəmi</th>
+                                <th></th> <!-- Silmə düyməsi üçün -->
                             </tr>
                         </thead>
                         <tbody id="basketItemsList"></tbody>
@@ -289,7 +290,7 @@
         let currentCategoryId = null;
         let currentSearch = '';
 
-        // --- MƏRKƏZİ API ÇAĞIRIŞ FUNKSİYASI ---
+        // --- MƏRKƏZİ API ÇAĞIRIŞ FUNKSİYASI (DÜZƏLDİLDİ!) ---
         async function apiCall(endpoint, method = 'GET', bodyData = null) {
             const options = { method: method, headers: {} };
             if (bodyData) {
@@ -304,7 +305,13 @@
                 if (!res.ok || json.isSuccess === false) {
                     throw new Error(json.message || json.Message || 'Sistemdə xəta baş verdi');
                 }
-                return json.data !== undefined ? json.data : json.Data;
+
+                // DÜZƏLİŞ BURA EDİLDİ:
+                // GET sorğusunda 'data' gəlirsə onu qaytar, gəlmirsə (məsələn DELETE, POST, PUT) true qaytar ki, uğurlu olduğu bilinsin!
+                if (json.data !== undefined && json.data !== null) return json.data;
+                if (json.Data !== undefined && json.Data !== null) return json.Data;
+
+                return true;
             } catch (err) {
                 Swal.fire({ icon: 'error', title: 'Xəta!', text: err.message, confirmButtonColor: '#4f46e5' });
                 return null;
@@ -326,7 +333,6 @@
                 clearTimeout(searchTimeout);
             }
 
-            // Yarım saniyə (500ms) gözləyirik ki, istifadəçi yazmağı bitirsin
             searchTimeout = setTimeout(() => {
                 loadCategories();
                 loadProducts(1);
@@ -334,20 +340,19 @@
         }
 
         function handleSearch(e) {
-            e.preventDefault(); // Enterə basanda səhifənin refresh olmasının qarşısını alır
+            e.preventDefault();
         }
-
 
         // ================= KATEQORİYA ƏMƏLİYYATLARI =================
         async function loadCategories() {
-            const data = await apiCall('/api/Category', 'GET');
+            const data = await apiCall('/api/category', 'GET');
             const list = document.getElementById('categoryList');
             const select = document.getElementById('prodCatId');
 
             list.innerHTML = `<li class="list-group-item py-3 fw-bold ${currentCategoryId === null ? 'active' : ''}"
-                                          onclick="selectCategory(null, 'Bütün Məhsullar')">
-                                          <span><i class="fas fa-th-large me-2"></i> Bütün Məhsullar</span>
-                                      </li>`;
+                                              onclick="selectCategory(null, 'Bütün Məhsullar')">
+                                              <span><i class="fas fa-th-large me-2"></i> Bütün Məhsullar</span>
+                                          </li>`;
             select.innerHTML = '<option value="">Kateqoriya seçin...</option>';
 
             if (data && data.length > 0) {
@@ -356,13 +361,13 @@
                     const name = c.Name || c.name;
 
                     list.innerHTML += `
-                                <li class="list-group-item py-3 ${currentCategoryId === id ? 'active' : ''}">
-                                    <span onclick="selectCategory(${id}, '${name}')" class="flex-grow-1">${name}</span>
-                                    <div class="cat-actions">
-                                        <button class="btn btn-sm btn-light text-info" onclick="openCategoryModal(${id}, '${name}')"><i class="fas fa-edit"></i></button>
-                                        <button class="btn btn-sm btn-light text-danger" onclick="deleteCategory(${id})"><i class="fas fa-trash"></i></button>
-                                    </div>
-                                </li>`;
+                                    <li class="list-group-item py-3 ${currentCategoryId === id ? 'active' : ''}">
+                                        <span onclick="selectCategory(${id}, '${name}')" class="flex-grow-1">${name}</span>
+                                        <div class="cat-actions">
+                                            <button class="btn btn-sm btn-light text-info" onclick="openCategoryModal(${id}, '${name}')"><i class="fas fa-edit"></i></button>
+                                            <button class="btn btn-sm btn-light text-danger" onclick="deleteCategory(${id})"><i class="fas fa-trash"></i></button>
+                                        </div>
+                                    </li>`;
 
                     select.innerHTML += `<option value="${id}">${name}</option>`;
                 });
@@ -372,10 +377,8 @@
         function selectCategory(id, name) {
             currentCategoryId = id;
             currentPage = 1;
-
             currentSearch = '';
             document.getElementById('searchInput').value = '';
-
             document.getElementById('mainTitle').innerText = name;
             loadCategories();
             loadProducts();
@@ -394,8 +397,8 @@
             const payload = { name: document.getElementById('catName').value };
 
             let result = id
-                ? await apiCall(`/api/Category/${id}`, 'PUT', payload)
-                : await apiCall('/api/Category', 'POST', payload);
+                ? await apiCall(`/api/category/${id}`, 'PUT', payload)
+                : await apiCall('/api/category', 'POST', payload);
 
             if (result !== null) {
                 Swal.fire({ icon: 'success', title: 'Uğurlu!', text: 'Kateqoriya yadda saxlanıldı', timer: 1500, showConfirmButton: false });
@@ -407,7 +410,7 @@
         async function deleteCategory(id) {
             const confirm = await Swal.fire({ title: 'Əminsiniz?', text: "Bu kateqoriya silinəcək!", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Bəli, sil!', cancelButtonText: 'Xeyr' });
             if (confirm.isConfirmed) {
-                const result = await apiCall(`/api/Category/${id}`, 'DELETE');
+                const result = await apiCall(`/api/category/${id}`, 'DELETE');
                 if (result !== null) {
                     if (currentCategoryId === id) selectCategory(null, 'Bütün Məhsullar');
                     loadCategories();
@@ -418,10 +421,10 @@
         // ================= MƏHSUL ƏMƏLİYYATLARI =================
         async function loadProducts(page = 1) {
             currentPage = page;
-            let url = `/api/Products?page=${currentPage}`;
+            let url = `/api/products?page=${currentPage}`;
 
             if (currentCategoryId !== null) {
-                url = `/api/Products/category/${currentCategoryId}`;
+                url = `/api/products/category/${currentCategoryId}`;
             } else if (currentSearch !== '') {
                 url += `&search=${encodeURIComponent(currentSearch)}`;
             }
@@ -439,25 +442,25 @@
                     const catName = p.CategroyName || p.categroyName || p.categoryName || '';
 
                     grid.innerHTML += `
-                                <div class="col-md-6 col-lg-4">
-                                    <div class="card product-card h-100 position-relative">
-                                        <div class="crud-actions">
-                                            <button class="btn btn-sm btn-light text-primary shadow-sm" onclick="openProductModal(${id}, '${name}', ${price}, ${catId})"><i class="fas fa-edit"></i></button>
-                                            <button class="btn btn-sm btn-light text-danger shadow-sm" onclick="deleteProduct(${id})"><i class="fas fa-trash"></i></button>
+                                    <div class="col-md-6 col-lg-4">
+                                        <div class="card product-card h-100 position-relative">
+                                            <div class="crud-actions">
+                                                <button class="btn btn-sm btn-light text-primary shadow-sm" onclick="openProductModal(${id}, '${name}', ${price}, ${catId})"><i class="fas fa-edit"></i></button>
+                                                <button class="btn btn-sm btn-light text-danger shadow-sm" onclick="deleteProduct(${id})"><i class="fas fa-trash"></i></button>
+                                            </div>
+                                            <div class="product-img-box">
+                                                <i class="fas fa-box fa-4x opacity-50"></i>
+                                            </div>
+                                            <div class="card-body d-flex flex-column text-center">
+                                                <span class="badge bg-secondary mb-2 mx-auto">${catName}</span>
+                                                <h5 class="card-title fw-bold text-dark">${name}</h5>
+                                                <div class="price-tag mb-3">${price} AZN</div>
+                                                <button class="btn btn-outline-primary mt-auto fw-bold" onclick="addToBasket(${id})">
+                                                    <i class="fas fa-cart-plus me-1"></i> Səbətə at
+                                                </button>
+                                            </div>
                                         </div>
-                                        <div class="product-img-box">
-                                            <i class="fas fa-box fa-4x opacity-50"></i>
-                                        </div>
-                                        <div class="card-body d-flex flex-column text-center">
-                                            <span class="badge bg-secondary mb-2 mx-auto">${catName}</span>
-                                            <h5 class="card-title fw-bold text-dark">${name}</h5>
-                                            <div class="price-tag mb-3">${price} AZN</div>
-                                            <button class="btn btn-outline-primary mt-auto fw-bold" onclick="addToBasket(${id})">
-                                                <i class="fas fa-cart-plus me-1"></i> Səbətə at
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>`;
+                                    </div>`;
                 });
 
                 if (currentCategoryId === null) {
@@ -467,9 +470,9 @@
                 }
             } else {
                 grid.innerHTML = `<div class="col-12 text-center py-5">
-                                            <i class="fas fa-search fa-3x text-muted mb-3"></i>
-                                            <h5 class="text-muted">Axtarışa uyğun məhsul tapılmadı.</h5>
-                                          </div>`;
+                                                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                                                <h5 class="text-muted">Axtarışa uyğun məhsul tapılmadı.</h5>
+                                              </div>`;
                 renderPagination(0);
             }
         }
@@ -494,8 +497,8 @@
             };
 
             let result = id
-                ? await apiCall(`/api/Products/${id}`, 'PUT', payload)
-                : await apiCall('/api/Products', 'POST', payload);
+                ? await apiCall(`/api/products/${id}`, 'PUT', payload)
+                : await apiCall('/api/products', 'POST', payload);
 
             if (result !== null) {
                 Swal.fire({ icon: 'success', title: 'Uğurlu!', text: 'Məhsul yadda saxlanıldı', timer: 1500, showConfirmButton: false });
@@ -507,7 +510,7 @@
         async function deleteProduct(id) {
             const confirm = await Swal.fire({ title: 'Əminsiniz?', text: "Bu məhsul silinəcək!", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Bəli, sil!' });
             if (confirm.isConfirmed) {
-                const result = await apiCall(`/api/Products/${id}`, 'DELETE');
+                const result = await apiCall(`/api/products/${id}`, 'DELETE');
                 if (result !== null) loadProducts(currentPage);
             }
         }
@@ -518,21 +521,21 @@
             if (dataLength === 0 && currentPage === 1) return;
 
             ul.innerHTML += `<li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
-                                        <button class="page-link" onclick="loadProducts(${currentPage - 1})">Əvvəlki</button>
-                                     </li>`;
+                                            <button class="page-link" onclick="loadProducts(${currentPage - 1})">Əvvəlki</button>
+                                         </li>`;
 
             ul.innerHTML += `<li class="page-item active"><button class="page-link">${currentPage}</button></li>`;
 
             const isLastPage = dataLength < 5;
             ul.innerHTML += `<li class="page-item ${isLastPage ? 'disabled' : ''}">
-                                        <button class="page-link" onclick="loadProducts(${currentPage + 1})">Növbəti</button>
-                                     </li>`;
+                                            <button class="page-link" onclick="loadProducts(${currentPage + 1})">Növbəti</button>
+                                         </li>`;
         }
 
         // ================= SƏBƏT ƏMƏLİYYATLARI =================
         async function addToBasket(productId) {
             const payload = { productId: productId, quantity: 1 };
-            const result = await apiCall(`/api/Baskets/${myBasketId}/items`, 'POST', payload);
+            const result = await apiCall(`/api/baskets/${myBasketId}/items`, 'POST', payload);
 
             if (result !== null) {
                 const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 });
@@ -540,8 +543,32 @@
             }
         }
 
+        // SƏBƏTDƏN SİLMƏ
+        async function removeFromBasket(productId) {
+            const confirm = await Swal.fire({
+                title: 'Silmək istəyirsiniz?',
+                text: "Məhsul səbətdən çıxarılacaq!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Bəli, sil!',
+                cancelButtonText: 'Xeyr'
+            });
+
+            if (confirm.isConfirmed) {
+                const result = await apiCall(`/api/baskets/${myBasketId}/items/${productId}`, 'DELETE');
+
+                // Məntiqi xəta düzəldildiyi üçün artıq 'result' null gəlməyəcək və bu kod işləyəcək!
+                if (result !== null) {
+                    Swal.fire({ icon: 'success', title: 'Silindi!', text: 'Məhsul səbətdən çıxarıldı.', timer: 1000, showConfirmButton: false });
+                    viewBasket(); // Səbəti yeniləyir
+                }
+            }
+        }
+
         async function viewBasket() {
-            const data = await apiCall(`/api/Baskets/${myBasketId}`, 'GET');
+            const data = await apiCall(`/api/baskets/${myBasketId}`, 'GET');
             const tbody = document.getElementById('basketItemsList');
             const totalDisplay = document.getElementById('basketTotalAmount');
             tbody.innerHTML = '';
@@ -549,6 +576,7 @@
 
             if (data && data.length > 0) {
                 data.forEach(item => {
+                    const productId = item.productId || item.ProductId;
                     const price = item.price || item.Price || 0;
                     const qty = item.quantity || item.Quantity || 0;
                     const name = item.productName || item.ProductName || 'Məhsul';
@@ -556,19 +584,28 @@
                     totalAmount += itemTotal;
 
                     tbody.innerHTML += `
-                                <tr>
-                                    <td class="align-middle fw-bold">${name}</td>
-                                    <td class="align-middle"><span class="badge bg-primary rounded-pill px-3 py-2">${qty}</span></td>
-                                    <td class="align-middle">${price} AZN</td>
-                                    <td class="align-middle fw-bold text-success">${itemTotal} AZN</td>
-                                </tr>`;
+                                    <tr>
+                                        <td class="align-middle fw-bold">${name}</td>
+                                        <td class="align-middle"><span class="badge bg-primary rounded-pill px-3 py-2">${qty}</span></td>
+                                        <td class="align-middle">${price} AZN</td>
+                                        <td class="align-middle fw-bold text-success">${itemTotal} AZN</td>
+                                        <td class="align-middle text-end">
+                                            <button class="btn btn-sm btn-outline-danger" onclick="removeFromBasket(${productId})" title="Səbətdən sil">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>`;
                 });
             } else {
-                tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-4">Səbətiniz boşdur</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">Səbətiniz boşdur</td></tr>';
             }
 
             totalDisplay.innerText = `Cəmi: ${totalAmount} AZN`;
-            new bootstrap.Modal(document.getElementById('basketModal')).show();
+
+            // Modalın iki dəfə açılmasının (bug) qarşısını alır, yalnız lazım olanda göstərir
+            const basketModalEl = document.getElementById('basketModal');
+            const basketModal = bootstrap.Modal.getInstance(basketModalEl) || new bootstrap.Modal(basketModalEl);
+            basketModal.show();
         }
 
         // --- SƏHİFƏ YÜKLƏNƏNDƏ ---
