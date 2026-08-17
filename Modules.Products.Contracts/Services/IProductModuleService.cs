@@ -9,7 +9,7 @@ namespace Modules.Products.Contracts.Services;
 
 public interface IProductModuleService
 {
-    Task<List<ResponseProductGet>> Get(int page, int size);
+    Task<List<ResponseProductGet>> Get(int page, int size,string ? search);
     Task<ResponseProductGet> Get(int id);
     Task Post(RequestProductCreate requestProductCreate);
     Task Delete(int id);

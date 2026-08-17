@@ -29,9 +29,9 @@ public class ProductsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] int page = 1, [FromQuery] int size = 5)
+    public async Task<IActionResult> Get([FromQuery] int page = 1, [FromQuery] int size = 5,string? search=null)
     {
-        var products = await _productModuleService.Get(page, size);
+        var products = await _productModuleService.Get(page, size,search); 
 
         return Ok(new ApiResponseModel(true, 200, "Products retrieved successfully", products));
     }
