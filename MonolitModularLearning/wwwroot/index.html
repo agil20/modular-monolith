@@ -187,16 +187,16 @@
                 const list = document.getElementById('categoryList');
 
                 list.innerHTML = `<li class="list-group-item fw-bold text-primary" onclick="selectCategory(null, 'Bütün Məhsullar')" style="cursor:pointer;">
-                                <i class="fas fa-th-large me-2"></i> Bütün Məhsullar
-                            </li>`;
+                                    <i class="fas fa-th-large me-2"></i> Bütün Məhsullar
+                                </li>`;
 
                 if (data && data.length > 0) {
                     data.forEach(c => {
                         const catId = c.Id || c.id;
                         const catName = c.Name || c.name;
                         list.innerHTML += `<li class="list-group-item" onclick="selectCategory(${catId}, '${catName}')" style="cursor:pointer;">
-                                        ${catName}
-                                    </li>`;
+                                            ${catName}
+                                        </li>`;
                     });
                 } else {
                     list.innerHTML += '<li class="list-group-item text-muted">Kateqoriya tapılmadı</li>';
@@ -218,26 +218,26 @@
                     const pCatName = p.CategroyName || p.categroyName || p.categoryName || '';
 
                     grid.innerHTML += `
-                                <div class="col-md-4 mb-4">
-                                    <div class="card product-card h-100 text-center p-3 position-relative">
-                                        <div class="card-actions">
-                                            <button class="btn btn-sm btn-outline-info" onclick="openEditModal(${pId}, '${pName}', ${pPrice}, ${pCatId})" title="Redaktə et">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button class="btn btn-sm btn-outline-danger" onclick="deleteProduct(${pId})" title="Sil">
-                                                <i class="fas fa-trash"></i>
+                                    <div class="col-md-4 mb-4">
+                                        <div class="card product-card h-100 text-center p-3 position-relative">
+                                            <div class="card-actions">
+                                                <button class="btn btn-sm btn-outline-info" onclick="openEditModal(${pId}, '${pName}', ${pPrice}, ${pCatId})" title="Redaktə et">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-danger" onclick="deleteProduct(${pId})" title="Sil">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                            <div class="mb-3 mt-3 text-secondary"><i class="fas fa-box fa-3x"></i></div>
+                                            <h5 class="card-title">${pName || 'Adsız'}</h5>
+                                            <h6 class="text-success fw-bold">${pPrice ? pPrice + ' AZN' : 'Qiymət yoxdur'}</h6>
+                                            <p class="text-muted small mb-3">ID: ${pId} | ${pCatName}</p>
+                                            <button class="btn btn-outline-primary mt-auto" onclick="addToBasket(${pId})">
+                                                <i class="fas fa-cart-plus"></i> Səbətə at
                                             </button>
                                         </div>
-                                        <div class="mb-3 mt-3 text-secondary"><i class="fas fa-box fa-3x"></i></div>
-                                        <h5 class="card-title">${pName || 'Adsız'}</h5>
-                                        <h6 class="text-success fw-bold">${pPrice ? pPrice + ' AZN' : 'Qiymət yoxdur'}</h6>
-                                        <p class="text-muted small mb-3">ID: ${pId} | ${pCatName}</p>
-                                        <button class="btn btn-outline-primary mt-auto" onclick="addToBasket(${pId})">
-                                            <i class="fas fa-cart-plus"></i> Səbətə at
-                                        </button>
                                     </div>
-                                </div>
-                            `;
+                                `;
                 });
             } else {
                 grid.innerHTML = '<div class="col-12 alert alert-info">Bu kateqoriyada məhsul tapılmadı.</div>';
@@ -251,11 +251,10 @@
             loadProducts();
         }
 
-        // 3. MƏHSULLARI VƏ SƏHİFƏLƏMƏNI YÜKLƏYƏN ƏSAS FUNKSİYA (DÜZƏLİŞ EDİLDİ)
+        // 3. MƏHSULLARI VƏ SƏHİFƏLƏMƏNI YÜKLƏYƏN ƏSAS FUNKSİYA
         async function loadProducts(page = 1) {
             currentPage = page;
             try {
-                // ARTIQ BURADA SİZE GÖNDƏRMİRİK, BACKEND ÖZÜ HƏLL EDƏCƏK
                 let url = `/api/products?page=${currentPage}`;
 
                 if (currentCategoryId !== null) {
@@ -268,40 +267,50 @@
                     renderProductGrid(data);
 
                     if (currentCategoryId === null) {
-                        renderPagination();
+                        // Data uzunluğunu funksiyaya göndəririk ki, Növbəti düyməsini idarə edə bilsin
+                        renderPagination(data.length);
                     } else {
                         document.getElementById('paginationUI').innerHTML = '';
                     }
                 } else {
                     renderProductGrid([]);
+                    renderPagination(0);
                 }
             } catch (err) { console.error("Məhsullar yüklənərkən xəta:", err); }
         }
 
-        // 4. SƏHİFƏLƏMƏ DÜYMƏLƏRİNİN RƏSMİ
-        function renderPagination() {
+        // 4. SƏHİFƏLƏMƏ DÜYMƏLƏRİNİN RƏSMİ (YENİLƏNDİ)
+        function renderPagination(dataLength) {
             const paginationList = document.getElementById('paginationUI');
             paginationList.innerHTML = '';
 
-            paginationList.innerHTML += `
-                        <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
-                            <button class="page-link" onclick="loadProducts(${currentPage - 1})">Əvvəlki</button>
-                        </li>
-                    `;
+            // Əgər ümumiyyətlə heç nə yoxdursa və 1-ci səhifədəyiksə, paginasiyanı gizlət
+            if (dataLength === 0 && currentPage === 1) return;
 
-            for (let i = 1; i <= 3; i++) {
-                paginationList.innerHTML += `
-                            <li class="page-item ${currentPage === i ? 'active' : ''}">
-                                <button class="page-link" onclick="loadProducts(${i})">${i}</button>
-                            </li>
-                        `;
-            }
+            // Əvvəlki düyməsi (1-ci səhifədəyiksə söndürülür)
+            paginationList.innerHTML += `
+                    <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                        <button class="page-link" onclick="loadProducts(${currentPage - 1})">Əvvəlki</button>
+                    </li>
+                `;
+
+            // Yalnız içində olduğumuz cari səhifəni göstərək
+            paginationList.innerHTML += `
+                    <li class="page-item active">
+                        <button class="page-link">${currentPage}</button>
+                    </li>
+                `;
+
+            // Növbəti düyməsi (Gələn məlumat limitdən azdırsa, söndürülür)
+            // Backend-də limit neçədirsə, onu bura yazırsan (məsələn, 3)
+            const backendLimit = 3;
+            const isLastPage = dataLength < backendLimit;
 
             paginationList.innerHTML += `
-                        <li class="page-item">
-                            <button class="page-link" onclick="loadProducts(${currentPage + 1})">Növbəti</button>
-                        </li>
-                    `;
+                    <li class="page-item ${isLastPage ? 'disabled' : ''}">
+                        <button class="page-link" onclick="loadProducts(${currentPage + 1})">Növbəti</button>
+                    </li>
+                `;
         }
 
         // 5. SİLMƏ ƏMƏLİYYATI

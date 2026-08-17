@@ -1,6 +1,7 @@
 ﻿using Common.Entites;
 using Microsoft.EntityFrameworkCore;
 using Modules.Categories.Domain;
+using Modules.Categories.Infrastructure.Persistence.Configurations;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,22 +21,7 @@ public class CategoriesDbContext : DbContext
     {
         modelBuilder.HasDefaultSchema("Categories");
 
-        modelBuilder.Entity<Category>(entity =>
-        {
-            entity.HasKey(c => c.Id);
-            entity.Property(c => c.Name).IsRequired().HasMaxLength(100);
-        });
-
-        modelBuilder.Entity<Category>().HasQueryFilter(x => !x.IsDeleted);
-        var seedDate = new DateTimeOffset(2026, 8, 17, 0, 0, 0, TimeSpan.Zero);
-
-        // Kateqoriyalar sənin dediyin kimi 2-dən başlayır
-        modelBuilder.Entity<Category>().HasData(
-            new Category { Id = 2, Name = "Elektronika", CreatedAt = seedDate, IsDeleted = false },
-            new Category { Id = 3, Name = "Geyim", CreatedAt = seedDate, IsDeleted = false },
-            new Category { Id = 4, Name = "Ev və Mebel", CreatedAt = seedDate, IsDeleted = false },
-            new Category { Id = 5, Name = "İdman və Əyləncə", CreatedAt = seedDate, IsDeleted = false }
-        );
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(CategoryConfiguration).Assembly);
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

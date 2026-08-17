@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Modules.Baskets.Domain;
+using Modules.Baskets.Infrastructure.Persistence.Configurations;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -21,14 +22,7 @@ public class BasketDbContext : DbContext
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.HasDefaultSchema("Baskets");
-
-        modelBuilder.Entity<Modules.Baskets.Domain.Basket>(entity =>
-        {
-            entity.HasKey(b => b.Id);
-            entity.Property(b => b.Id).ValueGeneratedOnAdd();
-            entity.HasMany(b => b.Items)
-                  .WithOne(i => i.Basket)
-                  .HasForeignKey(i => i.BasketId);
-        });
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(BasketConfiguration).Assembly);
+     
     }
 }

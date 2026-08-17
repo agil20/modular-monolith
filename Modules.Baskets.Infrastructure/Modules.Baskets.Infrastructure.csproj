@@ -9,8 +9,9 @@
 	<ItemGroup>
 		<!-- Digər layihə (Contract) ilə əlaqə (Reference) -->
 		<ProjectReference Include="..\Modules.Baskets.Contract\Modules.Baskets.Contract.csproj" />
-		<!-- Domain layihəsi (Basket və BasketItem üçün) -->
 		<ProjectReference Include="..\Modules.Baskets.Domain\Modules.Baskets.Domain.csproj" />
+		<!-- Domain layihəsi (Basket və BasketItem üçün) -->
+		<ProjectReference Include="..\Modules.Categories.Domain\Modules.Categories.Domain.csproj" />
 		<ProjectReference Include="..\Modules.Products.Contracts\Modules.Products.Contracts.csproj" />
 	</ItemGroup>
 
