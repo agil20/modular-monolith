@@ -24,11 +24,22 @@ public class PrductModuleService : IProductModuleService
         _categoryModuleService = categoryModuleService;
     }
 
-    public async Task<List<ResponseProductGet>> Get(int page, int size)
+    public async Task<List<ResponseProductGet>> Get(int page, int size, string? search = null)
     {
-        var products = await _context.Products
+      
+        var query = _context.Products
             .AsNoTracking()
             .Include(p => p.ProductDescription)
+            .AsQueryable();
+
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            query = query.Where(p => p.Name.ToLower().Contains(search.ToLower()));
+        }
+
+       
+        var products = await query
             .OrderBy(p => p.Id)
             .ToPaged(page, size)
             .Select(p => new ResponseProductGet
@@ -42,12 +53,11 @@ public class PrductModuleService : IProductModuleService
             })
             .ToListAsync();
 
-        // Ümumi Exception əvəzinə NotFoundException istifadə edirik
+       
         if (!products.Any())
             throw new NotFoundException("Məhsullar tapılmadı");
 
         var categoryIds = products.Select(p => p.CategoryId).Distinct().ToList();
-
         var categoryNames = await _categoryModuleService.GetCategoryNamesAsync(categoryIds);
 
         foreach (var product in products)
@@ -61,6 +71,7 @@ public class PrductModuleService : IProductModuleService
                 product.CategroyName = "Tapılmadı";
             }
         }
+
         return products;
     }
 
