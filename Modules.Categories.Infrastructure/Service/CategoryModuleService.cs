@@ -64,9 +64,7 @@ public class CategoryModuleService : ICategoryModuleService
 
     public async Task Post(RequestCategoryCreate requestCategoryCreate)
     {
-        // İstəsən eyni adlı kateqoriyanın yaranmasının qarşısını belə ala bilərsən:
-        // var isExist = await _context.Categories.AnyAsync(c => c.Name == requestCategoryCreate.Name);
-        // if (isExist) throw new DublicatedDataException($"'{requestCategoryCreate.Name}' adlı kateqoriya artıq mövcuddur");
+   
 
         var category = new Category
         {
@@ -97,13 +95,12 @@ public class CategoryModuleService : ICategoryModuleService
 
         if (category == null)
         {
-            // InvalidOperationException əvəzinə NotFoundException!
             throw new NotFoundException($"ID-si {id} olan kateqoriya silinmək üçün tapılmadı");
         }
 
         _context.Categories.Remove(category);
         await _context.SaveChangesAsync();
 
-        await _mediator.Publish(new CategoryDeleteEvent(id)); // MediatR ilə Event fırladırıq (Basket-lər üçün)
+        await _mediator.Publish(new CategoryDeleteEvent(id)); 
     }
 }
