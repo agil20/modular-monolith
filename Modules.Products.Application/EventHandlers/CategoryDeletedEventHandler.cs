@@ -25,7 +25,6 @@ namespace Modules.Products.EventHandlers
             {
                 foreach (var product in products)
                 {
-                    // Sən ProductDbContext-də də Soft Delete qurmusansa, bu Remove onları avtomatik Soft Delete edəcək
                     _context.Products.Remove(product);
 
                 }
