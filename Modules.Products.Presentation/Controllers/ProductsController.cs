@@ -2,7 +2,8 @@
 using Modules.Categories.Contract.Services;
 using Modules.Products.Contract.ProductDTOs;
 using Modules.Products.Contracts.Services;
-using Common.Models; 
+using Common.Models;
+using Modules.Products.Contracts.ProductDTOs;
 
 namespace Modules.Products.Controllers;
 
@@ -45,7 +46,7 @@ public class ProductsController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Put(int id, RequestProductCreate productdto)
+    public async Task<IActionResult> Put(int id, RequestUpdateProduct productdto)
     {
         await _productModuleService.Update(id, productdto);
 
