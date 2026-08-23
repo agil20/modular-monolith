@@ -9,7 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Common.Exceptions; // Xüsusi xətalarımız üçün namespace əlavə olundu
+using Common.Exceptions;
+using Modules.Products.Contracts.ProductDTOs; // Xüsusi xətalarımız üçün namespace əlavə olundu
 
 namespace Modules.Products.Infrastructure.Service;
 
@@ -160,7 +161,7 @@ public class PrductModuleService : IProductModuleService
         await _context.SaveChangesAsync();
     }
 
-    public async Task Update(int id, RequestProductCreate productdto)
+    public async Task Update(int id, RequestUpdateProduct productdto)
     {
         var product = await _context.Products.Include(p => p.ProductDescription).FirstOrDefaultAsync(p => p.Id == id);
 

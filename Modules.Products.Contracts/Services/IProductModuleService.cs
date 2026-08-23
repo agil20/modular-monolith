@@ -1,4 +1,5 @@
 ﻿using Modules.Products.Contract.ProductDTOs;
+using Modules.Products.Contracts.ProductDTOs;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -13,7 +14,7 @@ public interface IProductModuleService
     Task<ResponseProductGet> Get(int id);
     Task Post(RequestProductCreate requestProductCreate);
     Task Delete(int id);
-    Task Update(int id, RequestProductCreate requestProductUpdate);
+    Task Update(int id, RequestUpdateProduct requestProductUpdate);
     Task<Dictionary<int, ResponseProductGet>> GetProductNamesByIdsAsync(List<int> productIds);
 
     Task<List<ResponseProductGet>> GetProductsByCategory(int categoryId);
