@@ -1,4 +1,4 @@
-﻿using Common.Events;
+﻿
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Modules.Categories.Contract.CategoryDTOs;
@@ -102,7 +102,6 @@ public class CategoryModuleService : ICategoryModuleService
         _context.Categories.Remove(category);
         await _context.SaveChangesAsync();
 
-        await _mediator.Publish(new CategoryDeleteEvent(id)); 
     }
 
   
