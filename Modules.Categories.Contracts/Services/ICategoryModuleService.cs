@@ -1,4 +1,5 @@
 ﻿using Modules.Categories.Contract.CategoryDTOs;
+using Modules.Categories.Contracts.CategoryDTOs;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -13,7 +14,7 @@ namespace Modules.Categories.Contract.Services
 
         Task<List<ResponseCategory>> Get();
 
-        Task Update(int id, RequestCategoryCreate categorydto);
+        Task Update(int id, RequestCategoryUpdate responseCategory);
 
         Task Delete(int id);
 
