@@ -26,7 +26,7 @@ public class PrductModuleService : IProductModuleService
     }
 
     public async Task<List<ResponseProductGet>> Get(int page, int size, string? search = null)
-    {
+   {
       
         var query = _context.Products
             .AsNoTracking()
@@ -56,7 +56,7 @@ public class PrductModuleService : IProductModuleService
 
        
         if (!products.Any())
-            throw new NotFoundException("Məhsullar tapılmadı");
+            throw new NotFoundException("Product Tapilmadi");
 
         var categoryIds = products.Select(p => p.CategoryId).Distinct().ToList();
         var categoryNames = await _categoryModuleService.GetCategoryNamesAsync(categoryIds);

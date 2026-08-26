@@ -8,7 +8,8 @@ using Modules.Categories.Infrastructure.Persistence;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Common.Exceptions; // Xüsusi (Custom) xətalarımız üçün!
+using Common.Exceptions;
+using Modules.Categories.Contracts.CategoryDTOs; // Xüsusi (Custom) xətalarımız üçün!
 
 namespace Modules.Categories.Infrastructure.Service;
 
@@ -75,7 +76,7 @@ public class CategoryModuleService : ICategoryModuleService
         await _context.SaveChangesAsync();
     }
 
-    public async Task Update(int id, RequestCategoryCreate categorydto)
+    public async Task Update(int id, RequestCategoryUpdate responseCategory)
     {
         var category = await _context.Categories.FindAsync(id);
 
@@ -85,7 +86,7 @@ public class CategoryModuleService : ICategoryModuleService
             throw new NotFoundException($"ID-si {id} olan kateqoriya tapılmadı");
         }
 
-        category.Name = categorydto.Name;
+        category.Name = responseCategory.Name;
         await _context.SaveChangesAsync();
     }
 
@@ -103,4 +104,6 @@ public class CategoryModuleService : ICategoryModuleService
 
         await _mediator.Publish(new CategoryDeleteEvent(id)); 
     }
+
+  
 }

@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Modules.Categories.Contract.CategoryDTOs;
 using Modules.Categories.Contract.Services;
-using Common.Models; // Bütün cavablar artıq ApiResponseModel ilə idarə olunur
+using Common.Models;
+using Modules.Categories.Contracts.CategoryDTOs; // Bütün cavablar artıq ApiResponseModel ilə idarə olunur
 
 namespace Modules.Categories.Controllers;
 
@@ -36,7 +37,7 @@ public class CategoryController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Put(int id, RequestCategoryCreate categorydto)
+    public async Task<IActionResult> Put(int id, RequestCategoryUpdate categorydto)
     {
         await _categoryModuleService.Update(id, categorydto);
 
