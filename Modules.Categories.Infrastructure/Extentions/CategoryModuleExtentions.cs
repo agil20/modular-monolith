@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Modules.Categories.Application.Services;
 using Modules.Categories.Contract.Services;
-using Modules.Categories.Infrastructure.Service;
 using System;
 using System.Collections.Generic;
 using System.Text;

@@ -1,0 +1,93 @@
+﻿using Common.Repositories;
+using Microsoft.EntityFrameworkCore;
+using Modules.Products.Application.Repositories;
+using Modules.Products.Domain;
+using Modules.Products.Infrastructure.Persistence;
+using MonolitModularLearning.Common.Extentions;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace Modules.Products.Infrastructure.Repositories;
+
+public class ProductRepository : IProductRepository
+{
+    
+    private readonly ProductsDbContext _context;
+    private readonly DbSet<Product> _dbSet;
+
+    public ProductRepository(ProductsDbContext context)
+    {
+        _context = context;
+        _dbSet = _context.Set<Product>();
+    }
+
+    public async Task<Product?> GetByIdAsync(int id)
+    {
+        return await _dbSet.FindAsync(id);
+    }
+
+    public async Task<IReadOnlyList<Product>> GetAllAsync()
+    {
+        return await _dbSet.ToListAsync();
+    }
+
+    public async Task AddAsync(Product entity)
+    {
+        await _dbSet.AddAsync(entity);
+    }
+
+    public void Update(Product entity)
+    {
+        _dbSet.Update(entity);
+    }
+
+    public void Remove(Product entity)
+    {
+        _dbSet.Remove(entity);
+    }
+
+    public async Task<int> SaveChangesAsync()
+    {
+        return await _context.SaveChangesAsync();
+    }
+
+    // Dəyişiklik 1: Task<List<Product>> əvəzinə Task<IReadOnlyList<Product>>
+    public async Task<IReadOnlyList<Product>> GetPagedProductsAsync(int page, int size, string? search)
+    {
+        var query = _dbSet.AsNoTracking().Include(p => p.ProductDescription).AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            query = query.Where(p => p.Name.ToLower().Contains(search.ToLower()));
+        }
+
+        // ToListAsync() List qaytarsa da, List C#-da avtomatik IReadOnlyList-ə çevrilir.
+        return await query.OrderBy(p => p.Id).ToPaged(page, size).ToListAsync();
+    }
+
+    public async Task<Product?> GetProductWithDescriptionAsync(int id, bool trackChanges = false)
+    {
+        var query = _dbSet.Include(p => p.ProductDescription).AsQueryable();
+
+        if (!trackChanges)
+            query = query.AsNoTracking();
+
+        return await query.FirstOrDefaultAsync(p => p.Id == id);
+    }
+
+    // Dəyişiklik 2: Task<List<Product>> əvəzinə Task<IReadOnlyList<Product>>
+    public async Task<IReadOnlyList<Product>> GetProductsByIdsAsync(List<int> ids)
+    {
+        return await _dbSet.AsNoTracking().Where(p => ids.Contains(p.Id)).ToListAsync();
+    }
+
+    // Dəyişiklik 3: Task<List<Product>> əvəzinə Task<IReadOnlyList<Product>>
+    public async Task<IReadOnlyList<Product>> GetProductsByCategoryAsync(int categoryId)
+    {
+        return await _dbSet.AsNoTracking()
+            .Where(c => c.CategoryId == categoryId)
+            .Include(p => p.ProductDescription)
+            .ToListAsync();
+    }
+}

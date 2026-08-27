@@ -8,7 +8,7 @@ namespace Modules.Categories.Contract.Services
 {
     public interface ICategoryModuleService
     {
-        Task<string>? GetCategoryNameAsync(int id);
+        Task<string> GetCategoryNameAsync(int id);
 
         Task<Dictionary<int,string>> GetCategoryNamesAsync(List<int> ids);
 
