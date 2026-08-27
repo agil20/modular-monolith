@@ -8,8 +8,9 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Common\Common.csproj" />
+		<ProjectReference Include="..\Modules.Categories.Contracts\Modules.Categories.Contracts.csproj" />
 		<ProjectReference Include="..\Modules.Products.Contracts\Modules.Products.Contracts.csproj" />
-		<ProjectReference Include="..\Modules.Products.Infrastructure\Modules.Products.Infrastructure.csproj" />
+		<ProjectReference Include="..\Modules.Products.Domain\Modules.Products.Domain.csproj" />
 	</ItemGroup>
 
 </Project>
