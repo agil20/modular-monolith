@@ -21,7 +21,9 @@
 
 	<ItemGroup>
 		<!-- Digər qatları tanımaq üçün referanslar -->
+		<ProjectReference Include="..\Common\Common.csproj" />
 		<ProjectReference Include="..\Modules.Categories.Contracts\Modules.Categories.Contracts.csproj" />
+		<ProjectReference Include="..\Modules.Products.Application\Modules.Products.Application.csproj" />
 		<ProjectReference Include="..\Modules.Products.Contracts\Modules.Products.Contracts.csproj" />
 		<ProjectReference Include="..\Modules.Products.Domain\Modules.Products.Domain.csproj" />
 	</ItemGroup>
