@@ -6,7 +6,7 @@ using Modules.Baskets.Infrastructure.Extentions;
 using Modules.Baskets.Infrastructure.Persistence;
 using Modules.Categories.Extentions;
 using Modules.Categories.Infrastructure.Persistence;
-using Modules.Products.Infrastructure.Extentions;
+using Modules.Products.Application.Extentions;
 using Modules.Products.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
