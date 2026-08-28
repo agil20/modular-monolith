@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Modules.Products.Domain;
+﻿using Common.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Modules.Products.Application.Repositories;
+using Modules.Products.Domain;
+using Modules.Products.Infrastructure.Persistence;
 using MonolitModularLearning.Common.Extentions;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,10 +12,11 @@ namespace Modules.Products.Infrastructure.Repositories;
 
 public class ProductRepository : IProductRepository
 {
-    private readonly DbContext _context;
+    // 1. Ümumi DbContext əvəzinə, sırf Product modulunun konteksti olmalıdır!
+    private readonly ProductsDbContext _context;
     private readonly DbSet<Product> _dbSet;
 
-    public ProductRepository(DbContext context)
+    public ProductRepository(ProductsDbContext context)
     {
         _context = context;
         _dbSet = _context.Set<Product>();
@@ -46,12 +49,14 @@ public class ProductRepository : IProductRepository
         _dbSet.Remove(entity);
     }
 
-    public async Task<int> SaveChangesAsync()
+    // 2. IWriteRepository-dəki imza ilə uyğunlaşdırmaq üçün Task<int> əvəzinə Task edildi 
+    // və gərəksiz "Task IWriteRepository<Product>.SaveChangesAsync()" silindi.
+    public async Task SaveChangesAsync()
     {
-        return await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync();
     }
 
-  
+    // --- XÜSUSİ METODLAR (IProductRepository-dən gələnlər) ---
 
     public async Task<List<Product>> GetPagedProductsAsync(int page, int size, string? search)
     {

@@ -11,12 +11,12 @@ using Modules.Products.Contracts.ProductDTOs;
 
 namespace Modules.Products.Application;
 
-public class PrductModuleService : IProductModuleService
+public class ProductModuleService : IProductModuleService
 {
     private readonly IProductRepository _productRepository;
     private readonly ICategoryModuleService _categoryModuleService;
 
-    public PrductModuleService(IProductRepository productRepository, ICategoryModuleService categoryModuleService)
+    public ProductModuleService(IProductRepository productRepository, ICategoryModuleService categoryModuleService)
     {
         _productRepository = productRepository;
         _categoryModuleService = categoryModuleService;
