@@ -11,7 +11,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj" />
     <ProjectReference Include="..\Modules.Categories.Contracts\Modules.Categories.Contracts.csproj" />
+    <ProjectReference Include="..\Modules.Categories.Domain\Modules.Categories.Domain.csproj" />
   </ItemGroup>
 
 </Project>
