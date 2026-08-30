@@ -17,6 +17,7 @@ public class ProductsDbContext : DbContext
 
     public DbSet<Product> Products { get; set; }
     public DbSet<ProductDescription> ProductDescriptions { get; set; }
+    public DbSet<ProductPriceHistory>ProductPriceHistories { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

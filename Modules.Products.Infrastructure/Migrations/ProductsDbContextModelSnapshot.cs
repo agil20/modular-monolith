@@ -40,6 +40,9 @@ namespace Modules.Products.Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsVip")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -62,6 +65,7 @@ namespace Modules.Products.Infrastructure.Migrations
                             CategoryId = 2,
                             CreatedAt = new DateTimeOffset(new DateTime(2026, 8, 17, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             IsDeleted = false,
+                            IsVip = false,
                             Name = "Noutbuk Asus ROG",
                             Price = 2499.9899999999998
                         },
@@ -71,6 +75,7 @@ namespace Modules.Products.Infrastructure.Migrations
                             CategoryId = 2,
                             CreatedAt = new DateTimeOffset(new DateTime(2026, 8, 17, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             IsDeleted = false,
+                            IsVip = false,
                             Name = "Apple iPhone 15 Pro",
                             Price = 2799.0
                         },
@@ -80,6 +85,7 @@ namespace Modules.Products.Infrastructure.Migrations
                             CategoryId = 2,
                             CreatedAt = new DateTimeOffset(new DateTime(2026, 8, 17, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             IsDeleted = false,
+                            IsVip = false,
                             Name = "Simsiz Qulaqlıq AirPods",
                             Price = 450.0
                         },
@@ -89,6 +95,7 @@ namespace Modules.Products.Infrastructure.Migrations
                             CategoryId = 3,
                             CreatedAt = new DateTimeOffset(new DateTime(2026, 8, 17, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             IsDeleted = false,
+                            IsVip = false,
                             Name = "Kişi Qış Gödəkcəsi",
                             Price = 120.5
                         },
@@ -98,6 +105,7 @@ namespace Modules.Products.Infrastructure.Migrations
                             CategoryId = 3,
                             CreatedAt = new DateTimeOffset(new DateTime(2026, 8, 17, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             IsDeleted = false,
+                            IsVip = false,
                             Name = "Qadın Donu",
                             Price = 85.0
                         },
@@ -107,6 +115,7 @@ namespace Modules.Products.Infrastructure.Migrations
                             CategoryId = 4,
                             CreatedAt = new DateTimeOffset(new DateTime(2026, 8, 17, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             IsDeleted = false,
+                            IsVip = false,
                             Name = "Ortopedik Matras",
                             Price = 300.0
                         },
@@ -116,6 +125,7 @@ namespace Modules.Products.Infrastructure.Migrations
                             CategoryId = 4,
                             CreatedAt = new DateTimeOffset(new DateTime(2026, 8, 17, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             IsDeleted = false,
+                            IsVip = false,
                             Name = "İş Masası",
                             Price = 150.0
                         },
@@ -125,6 +135,7 @@ namespace Modules.Products.Infrastructure.Migrations
                             CategoryId = 5,
                             CreatedAt = new DateTimeOffset(new DateTime(2026, 8, 17, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             IsDeleted = false,
+                            IsVip = false,
                             Name = "Qaçış Trenajoru",
                             Price = 800.0
                         },
@@ -134,6 +145,7 @@ namespace Modules.Products.Infrastructure.Migrations
                             CategoryId = 5,
                             CreatedAt = new DateTimeOffset(new DateTime(2026, 8, 17, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             IsDeleted = false,
+                            IsVip = false,
                             Name = "Futbol Topu (Nike)",
                             Price = 65.0
                         });
@@ -162,6 +174,25 @@ namespace Modules.Products.Infrastructure.Migrations
                     b.ToTable("ProductDescriptions", "Products");
                 });
 
+            modelBuilder.Entity("Modules.Products.Domain.ProductPriceHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ChangedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal>("NewPrice")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal?>("OldPrice")
+                        .HasColumnType("numeric");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ProductPriceHistories", "Products");
+                });
+
             modelBuilder.Entity("Modules.Products.Domain.ProductDescription", b =>
                 {
                     b.HasOne("Modules.Products.Domain.Product", "Product")
@@ -173,9 +204,22 @@ namespace Modules.Products.Infrastructure.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("Modules.Products.Domain.ProductPriceHistory", b =>
+                {
+                    b.HasOne("Modules.Products.Domain.Product", "Product")
+                        .WithMany("ProductPriceHistories")
+                        .HasForeignKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("Modules.Products.Domain.Product", b =>
                 {
                     b.Navigation("ProductDescription");
+
+                    b.Navigation("ProductPriceHistories");
                 });
 #pragma warning restore 612, 618
         }

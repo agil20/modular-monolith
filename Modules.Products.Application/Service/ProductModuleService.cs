@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Modules.Products.Contracts.ProductDTOs;
+using MassTransit;
+using Common.Events;
 
 namespace Modules.Products.Application;
 
@@ -15,11 +17,16 @@ public class ProductModuleService : IProductModuleService
 {
     private readonly IProductRepository _productRepository;
     private readonly ICategoryModuleService _categoryModuleService;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public ProductModuleService(IProductRepository productRepository, ICategoryModuleService categoryModuleService)
+    public ProductModuleService(IProductRepository productRepository,
+        ICategoryModuleService categoryModuleService
+        ,IPublishEndpoint publishEndpoint)
     {
         _productRepository = productRepository;
         _categoryModuleService = categoryModuleService;
+        _publishEndpoint = publishEndpoint;
+     
     }
 
     public async Task<List<ResponseProductGet>> Get(int page, int size, string? search = null)
@@ -124,7 +131,7 @@ public class ProductModuleService : IProductModuleService
         {
             throw new NotFoundException("Məhsul tapılmadı");
         }
-
+        double oldPrice= product.Price;
         product.Name = productdto.Name;
         product.Price = productdto.Price;
         product.CategoryId = productdto.CategoryId;
@@ -140,7 +147,16 @@ public class ProductModuleService : IProductModuleService
         {
             product.ProductDescription.Description = productdto.Description;
         }
-
+       double newPrice= productdto.Price;
+        if (oldPrice!= newPrice)
+        {
+            await _publishEndpoint.Publish(new ProductPriceChangedEvent
+            {
+                   Id = product.Id,
+                OldPrice = oldPrice,
+                NewPrice =newPrice
+            });
+        }
         _productRepository.Update(product);
         await _productRepository.SaveChangesAsync();
     }

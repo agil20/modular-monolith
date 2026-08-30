@@ -25,6 +25,9 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
         // Qlobal Query Filter (Silinmişləri gətirmə)
         builder.HasQueryFilter(x => !x.IsDeleted);
 
+        builder.HasMany(p => p.ProductPriceHistories)
+            .WithOne(ph => ph.Product)
+            .HasForeignKey(ph => ph.Id);    
         // Data Seed (Başlanğıc məlumatları)
         var seedDate = new DateTimeOffset(2026, 8, 17, 0, 0, 0, TimeSpan.Zero);
 

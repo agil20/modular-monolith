@@ -1,4 +1,5 @@
 using Common.Exceptions;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
 
@@ -55,7 +56,20 @@ builder.Services.AddDbContext<BasketDbContext>(options =>
 
 builder.Services.AddDbContext<ProductsDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddMassTransit(x =>
+{
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        var configuration = context.GetRequiredService<IConfiguration>();
 
+        // Burada appsettings.json-dakı bulud məlumatları oxunur
+        cfg.Host(configuration["RabbitMQ:Host"], configuration["RabbitMQ:VirtualHost"], h =>
+        {
+            h.Username(configuration["RabbitMQ:Username"]);
+            h.Password(configuration["RabbitMQ:Password"]);
+        });
+    });
+});
 var app = builder.Build();
 
 app.UseExceptionHandler();
@@ -73,6 +87,7 @@ if (app.Environment.IsDevelopment())
         c.RoutePrefix = string.Empty;
     });
 }
+
 
 app.UseHttpsRedirection();
 
