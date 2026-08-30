@@ -27,7 +27,7 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
 
         builder.HasMany(p => p.ProductPriceHistories)
             .WithOne(ph => ph.Product)
-            .HasForeignKey(ph => ph.Id);    
+            .HasForeignKey(ph => ph.ProductId);    
         // Data Seed (Başlanğıc məlumatları)
         var seedDate = new DateTimeOffset(2026, 8, 17, 0, 0, 0, TimeSpan.Zero);
 

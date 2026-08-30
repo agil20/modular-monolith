@@ -177,18 +177,35 @@ namespace Modules.Products.Infrastructure.Migrations
             modelBuilder.Entity("Modules.Products.Domain.ProductPriceHistory", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("ChangedDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<decimal>("NewPrice")
-                        .HasColumnType("numeric");
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
 
-                    b.Property<decimal?>("OldPrice")
-                        .HasColumnType("numeric");
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<double>("NewPrice")
+                        .HasColumnType("double precision");
+
+                    b.Property<double?>("OldPrice")
+                        .HasColumnType("double precision");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
 
                     b.ToTable("ProductPriceHistories", "Products");
                 });
@@ -208,7 +225,7 @@ namespace Modules.Products.Infrastructure.Migrations
                 {
                     b.HasOne("Modules.Products.Domain.Product", "Product")
                         .WithMany("ProductPriceHistories")
-                        .HasForeignKey("Id")
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

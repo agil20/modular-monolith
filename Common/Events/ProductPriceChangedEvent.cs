@@ -7,7 +7,7 @@ namespace Common.Events;
 
 public class ProductPriceChangedEvent
 {
-    public int Id { get; set; }
+    public int ProductId { get; set; }
    
     public double OldPrice { get; set; }
     public double NewPrice { get; set; }

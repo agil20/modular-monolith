@@ -152,7 +152,7 @@ public class ProductModuleService : IProductModuleService
         {
             await _publishEndpoint.Publish(new ProductPriceChangedEvent
             {
-                   Id = product.Id,
+                   ProductId = product.Id,
                 OldPrice = oldPrice,
                 NewPrice =newPrice
             });

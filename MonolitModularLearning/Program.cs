@@ -7,6 +7,7 @@ using Modules.Baskets.Infrastructure.Extentions;
 using Modules.Baskets.Infrastructure.Persistence;
 using Modules.Categories.Extentions;
 using Modules.Categories.Infrastructure.Persistence;
+using Modules.Products.Application.Consumers;
 using Modules.Products.Application.Extentions;
 using Modules.Products.Infrastructure.Persistence;
 
@@ -58,16 +59,21 @@ builder.Services.AddDbContext<ProductsDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddMassTransit(x =>
 {
+    
+    x.AddConsumer<ProductPriceChangedConsumer>();
+
     x.UsingRabbitMq((context, cfg) =>
     {
         var configuration = context.GetRequiredService<IConfiguration>();
 
-        // Burada appsettings.json-dakı bulud məlumatları oxunur
         cfg.Host(configuration["RabbitMQ:Host"], configuration["RabbitMQ:VirtualHost"], h =>
         {
             h.Username(configuration["RabbitMQ:Username"]);
             h.Password(configuration["RabbitMQ:Password"]);
         });
+
+        // 2. YENİ: Qeydiyyatdan keçən consumer-lər üçün avtomatik Queue yaradır və Exchange-ə bağlayır
+        cfg.ConfigureEndpoints(context);
     });
 });
 var app = builder.Build();

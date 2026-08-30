@@ -9,10 +9,11 @@ public static class ProductExtentions
 {
     public static IServiceCollection AddProductsModule(this IServiceCollection services)
     {
-        
         services.AddScoped<IProductModuleService, ProductModuleService>();
-
         services.AddScoped<IProductRepository, ProductRepository>();
+
+     
+        services.AddScoped<IProductPriceHistoryRepository, ProductPriceHistoryRepository>();
 
         return services;
     }
