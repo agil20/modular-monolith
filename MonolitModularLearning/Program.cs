@@ -66,6 +66,7 @@ builder.Services.AddMassTransit(x =>
     {
         var configuration = context.GetRequiredService<IConfiguration>();
 
+        cfg.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(5)));
         cfg.Host(configuration["RabbitMQ:Host"], configuration["RabbitMQ:VirtualHost"], h =>
         {
             h.Username(configuration["RabbitMQ:Username"]);

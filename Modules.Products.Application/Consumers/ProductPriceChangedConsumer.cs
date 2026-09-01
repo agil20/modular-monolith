@@ -31,6 +31,7 @@ public class ProductPriceChangedConsumer : IConsumer<ProductPriceChangedEvent>
            NewPrice=message.NewPrice,
 
         };
+       
 
         await _historyRepository.AddAsync(historyRecord);
         await _historyRepository.SaveChangesAsync();
